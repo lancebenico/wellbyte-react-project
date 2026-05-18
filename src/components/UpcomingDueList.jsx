@@ -31,7 +31,7 @@ export default function UpcomingDueList() {
           </div>
           <div>
             <h3 className="text-sm font-semibold text-text-primary">Deadlines</h3>
-            <p className="text-[11px] text-text-muted">Open tasks with due dates</p>
+            <p className="text-[11px] text-text-muted">Open tasks & events with due dates</p>
           </div>
         </div>
         <NavLink

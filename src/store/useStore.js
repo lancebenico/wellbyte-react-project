@@ -1,68 +1,21 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import {
-  localYmdPlus,
-  toLocalYMD,
-  isTaskOverdue,
-  isDueWithinDays,
-} from '../lib/timeManagement'
+import { toLocalYMD, isTaskOverdue, isDueWithinDays } from '../lib/timeManagement'
+import { normalizeItem, migrateStoredItems } from '../lib/items'
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
-
-const defaultTasks = [
-  {
-    id: generateId(),
-    title: 'Complete React project documentation',
-    description: 'Write comprehensive docs for the wellness tracker',
-    priority: 'high',
-    status: 'in-progress',
-    dueDate: localYmdPlus(3),
-    estimatedMinutes: 90,
-    createdAt: new Date().toISOString(),
-  },
-  {
-    id: generateId(),
-    title: 'Morning meditation session',
-    description: '15 minutes of mindfulness practice',
-    priority: 'medium',
-    status: 'completed',
-    dueDate: null,
-    estimatedMinutes: 15,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-  {
-    id: generateId(),
-    title: 'Review SDG 3 & 4 materials',
-    description: 'Study UN Sustainable Development Goals for health and education',
-    priority: 'high',
-    status: 'todo',
-    dueDate: localYmdPlus(7),
-    estimatedMinutes: 60,
-    createdAt: new Date(Date.now() - 172800000).toISOString(),
-  },
-  {
-    id: generateId(),
-    title: 'Take a 30-minute walk',
-    description: 'Get some fresh air and exercise',
-    priority: 'low',
-    status: 'todo',
-    dueDate: localYmdPlus(1),
-    estimatedMinutes: 30,
-    createdAt: new Date(Date.now() - 43200000).toISOString(),
-  },
-]
 
 let currentStorageName = 'wellbyte-storage'
 
 const useStore = create(
   persist(
     (set, get) => ({
-      tasks: defaultTasks,
+      tasks: [],
       moodEntries: [],
-      calendarEvents: [],
       filterStatus: 'all',
       filterPriority: 'all',
       filterDue: 'all',
+      filterCategory: 'all',
       pomodoroLog: { dateYmd: '', completedWorkSessions: 0 },
       quote: null,
       quoteLoading: false,
@@ -70,16 +23,11 @@ const useStore = create(
       addTask: (task) =>
         set((state) => ({
           tasks: [
-            {
+            normalizeItem({
               ...task,
               id: generateId(),
               createdAt: new Date().toISOString(),
-              dueDate: task.dueDate || null,
-              estimatedMinutes:
-                task.estimatedMinutes != null && task.estimatedMinutes !== ''
-                  ? Number(task.estimatedMinutes)
-                  : null,
-            },
+            }),
             ...state.tasks,
           ],
         })),
@@ -88,22 +36,27 @@ const useStore = create(
         set((state) => {
           const parent = options.parentTitle?.trim()
           const descPrefix = parent ? `Milestone — ${parent}` : ''
-          const newOnes = titles.map((title) => ({
-            id: generateId(),
-            title: title.trim(),
-            description: descPrefix,
-            priority: options.priority ?? 'medium',
-            status: 'todo',
-            dueDate: options.dueDate ?? null,
-            estimatedMinutes: options.estimatedMinutesPerStep ?? null,
-            createdAt: new Date().toISOString(),
-          }))
+          const newOnes = titles.map((title) =>
+            normalizeItem({
+              id: generateId(),
+              title: title.trim(),
+              description: descPrefix,
+              category: 'task',
+              priority: options.priority ?? 'medium',
+              status: 'todo',
+              dueDate: options.dueDate ?? null,
+              estimatedMinutes: options.estimatedMinutesPerStep ?? null,
+              createdAt: new Date().toISOString(),
+            })
+          )
           return { tasks: [...newOnes, ...state.tasks] }
         }),
 
       updateTask: (id, updates) =>
         set((state) => ({
-          tasks: state.tasks.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+          tasks: state.tasks.map((t) =>
+            t.id === id ? normalizeItem({ ...t, ...updates }) : t
+          ),
         })),
 
       deleteTask: (id) =>
@@ -123,13 +76,16 @@ const useStore = create(
       setFilterStatus: (status) => set({ filterStatus: status }),
       setFilterPriority: (priority) => set({ filterPriority: priority }),
       setFilterDue: (v) => set({ filterDue: v }),
+      setFilterCategory: (v) => set({ filterCategory: v }),
 
       getFilteredTasks: () => {
-        const { tasks, filterStatus, filterPriority, filterDue } = get()
+        const { tasks, filterStatus, filterPriority, filterDue, filterCategory } = get()
         return tasks.filter((t) => {
           const statusMatch = filterStatus === 'all' || t.status === filterStatus
           const priorityMatch = filterPriority === 'all' || t.priority === filterPriority
-          if (!statusMatch || !priorityMatch) return false
+          const categoryMatch =
+            filterCategory === 'all' || (t.category || 'task') === filterCategory
+          if (!statusMatch || !priorityMatch || !categoryMatch) return false
           if (filterDue === 'all') return true
           if (filterDue === 'has_due') return Boolean(t.dueDate)
           if (t.status === 'completed') return false
@@ -163,21 +119,6 @@ const useStore = create(
             { ...entry, id: generateId(), timestamp: new Date().toISOString() },
             ...state.moodEntries,
           ],
-        })),
-
-      addCalendarEvent: (ev) =>
-        set((state) => ({
-          calendarEvents: [{ ...ev, id: generateId() }, ...state.calendarEvents],
-        })),
-
-      updateCalendarEvent: (id, updates) =>
-        set((state) => ({
-          calendarEvents: state.calendarEvents.map((e) => (e.id === id ? { ...e, ...updates } : e)),
-        })),
-
-      deleteCalendarEvent: (id) =>
-        set((state) => ({
-          calendarEvents: state.calendarEvents.filter((e) => e.id !== id),
         })),
 
       setQuote: (quote) => set({ quote }),
@@ -216,9 +157,17 @@ const useStore = create(
       partialize: (state) => ({
         tasks: state.tasks,
         moodEntries: state.moodEntries,
-        calendarEvents: state.calendarEvents,
         pomodoroLog: state.pomodoroLog,
       }),
+      merge: (persisted, current) => {
+        const p = persisted?.state ?? persisted ?? {}
+        const tasks = migrateStoredItems(p.tasks ?? current.tasks, p.calendarEvents)
+        return {
+          ...current,
+          ...p,
+          tasks: tasks.map(normalizeItem),
+        }
+      },
     }
   )
 )
@@ -233,35 +182,36 @@ export function hydrateForUser(uid) {
     try {
       const parsed = JSON.parse(raw)
       const data = parsed?.state ?? {}
+      const tasks = migrateStoredItems(data.tasks ?? [], data.calendarEvents)
       useStore.setState({
-        tasks: data.tasks ?? defaultTasks,
+        tasks: tasks.map(normalizeItem),
         moodEntries: data.moodEntries ?? [],
-        calendarEvents: data.calendarEvents ?? [],
         pomodoroLog: data.pomodoroLog ?? { dateYmd: '', completedWorkSessions: 0 },
         filterStatus: 'all',
         filterPriority: 'all',
         filterDue: 'all',
+        filterCategory: 'all',
       })
     } catch {
       useStore.setState({
-        tasks: defaultTasks,
+        tasks: [],
         moodEntries: [],
-        calendarEvents: [],
         pomodoroLog: { dateYmd: '', completedWorkSessions: 0 },
         filterStatus: 'all',
         filterPriority: 'all',
         filterDue: 'all',
+        filterCategory: 'all',
       })
     }
   } else {
     useStore.setState({
-      tasks: defaultTasks,
+      tasks: [],
       moodEntries: [],
-      calendarEvents: [],
       pomodoroLog: { dateYmd: '', completedWorkSessions: 0 },
       filterStatus: 'all',
       filterPriority: 'all',
       filterDue: 'all',
+      filterCategory: 'all',
     })
   }
 

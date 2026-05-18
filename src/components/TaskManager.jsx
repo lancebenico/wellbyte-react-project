@@ -8,6 +8,7 @@ import SmartBreakdown from './SmartBreakdown'
 import useStore from '../store/useStore'
 import { taskItem, filterPill } from '../lib/animations'
 import { formatDueChip, formatShortDue } from '../lib/timeManagement'
+import { CATEGORY_LABELS, ITEM_CATEGORIES } from '../lib/items'
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
@@ -28,6 +29,11 @@ const DUE_OPTIONS = [
   { value: 'has_due', label: 'Has due date' },
   { value: 'week', label: 'Due in 7 days' },
   { value: 'overdue', label: 'Overdue' },
+]
+
+const CATEGORY_OPTIONS = [
+  { value: 'all', label: 'All types' },
+  ...ITEM_CATEGORIES.map((c) => ({ value: c, label: CATEGORY_LABELS[c] })),
 ]
 
 const PRIORITY_BADGE = {
@@ -74,6 +80,7 @@ function AddTaskForm({ onClose }) {
   const addTask = useStore((s) => s.addTask)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [category, setCategory] = useState('task')
   const [priority, setPriority] = useState('medium')
   const [status, setStatus] = useState('todo')
   const [dueDate, setDueDate] = useState('')
@@ -89,6 +96,7 @@ function AddTaskForm({ onClose }) {
     addTask({
       title: title.trim(),
       description: description.trim(),
+      category,
       priority,
       status,
       dueDate: dueDate || null,
@@ -120,6 +128,25 @@ function AddTaskForm({ onClose }) {
           placeholder="Description (optional)"
           className="retro-input w-full"
         />
+        <div>
+          <span className="block text-[11px] text-text-muted font-medium mb-1">Type</span>
+          <div className="flex rounded-md border border-black/[0.08] p-0.5 bg-white">
+            {ITEM_CATEGORIES.map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setCategory(cat)}
+                className={`flex-1 py-1.5 text-xs font-medium rounded transition-colors ${
+                  category === cat
+                    ? 'bg-text-primary text-white'
+                    : 'text-text-secondary hover:bg-[#fafafa]'
+                }`}
+              >
+                {CATEGORY_LABELS[cat]}
+              </button>
+            ))}
+          </div>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <span className="block text-[11px] text-text-muted font-medium mb-1">Due date (optional)</span>
@@ -181,7 +208,7 @@ function AddTaskForm({ onClose }) {
             Cancel
           </motion.button>
           <motion.button type="submit" whileTap={{ scale: 0.98 }} className="retro-btn retro-btn-purple">
-            Add task
+            Add item
           </motion.button>
         </div>
       </div>
@@ -233,10 +260,15 @@ function TaskCard({ task }) {
                 {task.title}
               </h4>
               <div className="flex items-center gap-1.5">
-                <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-medium ${priority.bg} ${priority.text} ${priority.border}`}>
-                  <priority.icon className="w-2.5 h-2.5" />
-                  {task.priority}
+                <span className="px-1.5 py-0.5 rounded border text-[10px] font-medium bg-indigo-50 text-indigo-800 border-indigo-200">
+                  {CATEGORY_LABELS[task.category] || 'Task'}
                 </span>
+                {(task.category || 'task') === 'task' && (
+                  <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-medium ${priority.bg} ${priority.text} ${priority.border}`}>
+                    <priority.icon className="w-2.5 h-2.5" />
+                    {task.priority}
+                  </span>
+                )}
                 <span className={`px-1.5 py-0.5 rounded border text-[10px] font-medium ${status.bg} ${status.text} ${status.border}`}>
                   {task.status}
                 </span>
@@ -339,8 +371,8 @@ export default function TaskManager() {
   const [showAddForm, setShowAddForm] = useState(false)
   const {
     tasks,
-    filterStatus, filterPriority, filterDue,
-    setFilterStatus, setFilterPriority, setFilterDue,
+    filterStatus, filterPriority, filterDue, filterCategory,
+    setFilterStatus, setFilterPriority, setFilterDue, setFilterCategory,
     getFilteredTasks,
   } = useStore()
 
@@ -353,7 +385,7 @@ export default function TaskManager() {
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <h3 className="text-sm font-semibold text-text-primary">To-do list</h3>
+        <h3 className="text-sm font-semibold text-text-primary">Tasks & events</h3>
         <div className="flex flex-wrap items-center gap-2">
           <SmartBreakdown />
           <motion.button
@@ -364,7 +396,7 @@ export default function TaskManager() {
             className="retro-btn retro-btn-pink flex items-center gap-1.5 text-xs"
           >
             {showAddForm ? <X className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
-            {showAddForm ? 'Close' : 'New task'}
+            {showAddForm ? 'Close' : 'New item'}
           </motion.button>
         </div>
       </div>
@@ -377,6 +409,7 @@ export default function TaskManager() {
         <FilterPills options={STATUS_OPTIONS} value={filterStatus} onChange={setFilterStatus} label="Status" />
         <FilterPills options={PRIORITY_OPTIONS} value={filterPriority} onChange={setFilterPriority} label="Priority" />
         <FilterPills options={DUE_OPTIONS} value={filterDue} onChange={setFilterDue} label="Deadline" />
+        <FilterPills options={CATEGORY_OPTIONS} value={filterCategory} onChange={setFilterCategory} label="Type" />
       </div>
 
       <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">

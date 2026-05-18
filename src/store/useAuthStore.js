@@ -5,6 +5,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth'
 import { auth, googleProvider, isFirebaseConfigured } from '../lib/firebase'
+import { stopFirestoreSync } from '../lib/firestoreSync'
 
 /** UST CICS Google accounts: local part must end with ".cics" before @ (e.g. juan.cics@ust.edu.ph). */
 function isAllowedCicsEmail(email) {
@@ -41,6 +42,7 @@ const useAuthStore = create((set) => ({
   signOut: async () => {
     if (!auth) return
     try {
+      stopFirestoreSync()
       await firebaseSignOut(auth)
       set({ user: null })
     } catch (err) {
