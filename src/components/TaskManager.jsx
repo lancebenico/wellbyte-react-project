@@ -44,7 +44,7 @@ const PRIORITY_BADGE = {
 
 const STATUS_BADGE = {
   todo: { bg: 'bg-stone-50', text: 'text-stone-600', border: 'border-stone-200' },
-  'in-progress': { bg: 'bg-sky-50', text: 'text-sky-800', border: 'border-sky-200' },
+  'in-progress': { bg: 'bg-cics-red-light', text: 'text-cics-red-dark', border: 'border-cics-red-muted' },
   completed: { bg: 'bg-emerald-50', text: 'text-emerald-800', border: 'border-emerald-200' },
 }
 
@@ -345,7 +345,7 @@ function TaskCard({ task }) {
                 whileTap={{ scale: 0.95 }}
                 type="button"
                 onClick={() => updateTask(task.id, { status: 'in-progress' })}
-                className="p-1.5 rounded-md text-text-muted hover:text-retro-blue hover:bg-sky-50 transition-colors"
+                className="p-1.5 rounded-md text-text-muted hover:text-cics-red hover:bg-cics-red-light transition-colors"
                 title="Start task"
               >
                 <ArrowRight className="w-3.5 h-3.5" />

@@ -30,8 +30,8 @@ export default function UpcomingDueList() {
             <CalendarDays className="w-4 h-4 text-[#7a6220]" aria-hidden />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-text-primary">Deadlines</h3>
-            <p className="text-[11px] text-text-muted">Open tasks & events with due dates</p>
+            <h3 className="text-sm font-semibold text-text-primary">Upcoming Deadlines</h3>
+            <p className="text-[11px] text-text-muted">Open tasks and events with due dates</p>
           </div>
         </div>
         <NavLink
