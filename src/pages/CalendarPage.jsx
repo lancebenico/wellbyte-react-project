@@ -157,13 +157,16 @@ export default function CalendarPage() {
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
             <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted mb-1">Calendar</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-cics-red mb-1">
+                Academic Calendar
+              </p>
               <h1 className="text-2xl font-semibold tracking-tight text-text-primary flex items-center gap-2">
-                <CalendarIcon className="w-7 h-7 text-text-secondary" aria-hidden />
+                <CalendarIcon className="w-7 h-7 text-cics-red" aria-hidden />
                 {title}
               </h1>
-              <p className="text-sm text-text-secondary mt-1 max-w-lg">
-                Tasks and events share one list — add or edit anything here or on the dashboard.
+              <p className="text-sm text-text-secondary mt-1 max-w-lg leading-relaxed">
+                View and manage your tasks and events in one place. Every item you create here appears
+                on your Dashboard and syncs across your devices.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -240,11 +243,11 @@ export default function CalendarPage() {
                           onDoubleClick={() => openCreate(cell)}
                           className={`min-h-[100px] sm:min-h-[112px] p-1.5 text-left transition-colors hover:bg-black/[0.02] ${
                             inMonth ? 'bg-white' : 'bg-[#fafafa]'
-                          } ${isSelected ? 'ring-1 ring-inset ring-retro-blue/35' : ''}`}
+                          } ${isSelected ? 'ring-2 ring-inset ring-cics-red/40 bg-cics-red-light/30' : ''}`}
                         >
                           <div
                             className={`text-xs font-semibold mb-1 w-7 h-7 flex items-center justify-center rounded-full ${
-                              isToday ? 'bg-text-primary text-white' : inMonth ? 'text-text-primary' : 'text-text-muted'
+                              isToday ? 'bg-cics-red text-white' : inMonth ? 'text-text-primary' : 'text-text-muted'
                             }`}
                           >
                             {cell.getDate()}
@@ -297,7 +300,7 @@ export default function CalendarPage() {
                           type="button"
                           onClick={() => setSelectedDay(startOfDay(d))}
                           className={`flex-1 py-2 text-center border-l border-black/[0.06] min-w-0 hover:bg-black/[0.03] ${
-                            isToday ? 'bg-sky-50/50' : ''
+                            isToday ? 'bg-cics-red-light/60' : ''
                           }`}
                         >
                           <div className="text-[10px] font-semibold uppercase text-text-muted truncate">
@@ -305,7 +308,7 @@ export default function CalendarPage() {
                           </div>
                           <div
                             className={`text-sm font-semibold tabular-nums inline-flex items-center justify-center w-8 h-8 rounded-full mx-auto mt-0.5 ${
-                              isToday ? 'bg-text-primary text-white' : 'text-text-primary'
+                              isToday ? 'bg-cics-red text-white' : 'text-text-primary'
                             }`}
                           >
                             {d.getDate()}

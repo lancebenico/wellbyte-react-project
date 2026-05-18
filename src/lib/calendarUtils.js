@@ -113,7 +113,7 @@ export function formatRangeLabel(start, end) {
 }
 
 export const EVENT_COLOR_HEX = {
-  blue: '#1a73e8',
+  blue: '#9b2335',
   green: '#188038',
   red: '#d93025',
   yellow: '#f9ab00',

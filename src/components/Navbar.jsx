@@ -1,11 +1,12 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { LayoutDashboard, Calendar, HeartHandshake, Users, LogOut, ChevronDown } from 'lucide-react'
+import { Home, LayoutDashboard, Calendar, HeartHandshake, Users, LogOut, ChevronDown } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
 
 const links = [
-  { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/', label: 'Home', icon: Home },
+  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/calendar', label: 'Calendar', icon: Calendar },
   { to: '/support', label: 'Support', icon: HeartHandshake },
   { to: '/developers', label: 'Developers', icon: Users },
@@ -133,7 +134,7 @@ export default function Navbar() {
         <div className="mx-auto max-w-7xl px-4 h-14 flex items-center justify-between gap-4">
           <NavLink
             to="/"
-            className="font-semibold text-[15px] tracking-tight text-text-primary truncate min-w-0 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
+            className="font-semibold text-[15px] tracking-tight text-cics-red-deep truncate min-w-0 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
           >
             WellByte
           </NavLink>
@@ -146,10 +147,10 @@ export default function Navbar() {
                   key={link.to}
                   to={link.to}
                   className={({ isActive }) =>
-                    `flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3] ${
+                    `flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3] ${
                       isActive
-                        ? 'text-text-primary bg-black/[0.05]'
-                        : 'text-text-secondary hover:text-text-primary hover:bg-black/[0.03]'
+                        ? 'text-cics-red-dark bg-cics-red-light'
+                        : 'text-text-secondary hover:text-cics-red-dark hover:bg-cics-red-light/50'
                     }`
                   }
                 >
