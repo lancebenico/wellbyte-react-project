@@ -2,8 +2,10 @@ import { useState, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, LayoutGrid, Columns2, List } from 'lucide-react'
 import PageTransition from '../components/PageTransition'
-import EventModal from '../components/calendar/EventModal'
+import ItemModal from '../components/calendar/ItemModal'
 import useStore from '../store/useStore'
+import { itemsToCalendarEvents, findItemByCalendarEvent } from '../lib/itemCalendar'
+import { CATEGORY_LABELS } from '../lib/items'
 import {
   monthMatrix,
   toYMD,
@@ -40,18 +42,6 @@ function addMonths(d, delta) {
   return x
 }
 
-function mergeCalendarPatch(prev, patch) {
-  const next = prev ? { ...prev, ...patch } : { ...patch }
-  if (next.allDay) {
-    delete next.start
-    delete next.end
-  } else {
-    delete next.startDate
-    delete next.endDate
-  }
-  return next
-}
-
 function sortForDayList(a, b) {
   if (a.allDay && !b.allDay) return -1
   if (!a.allDay && b.allDay) return 1
@@ -61,17 +51,25 @@ function sortForDayList(a, b) {
   return new Date(a.start) - new Date(b.start)
 }
 
+function eventTimeLabel(ev) {
+  const typeLabel = CATEGORY_LABELS[ev.category] || 'Item'
+  if (ev.allDay) return `${typeLabel} · all day`
+  return `${typeLabel} · ${formatRangeLabel(new Date(ev.start), new Date(ev.end))}`
+}
+
 export default function CalendarPage() {
-  const calendarEvents = useStore((s) => s.calendarEvents)
-  const addCalendarEvent = useStore((s) => s.addCalendarEvent)
-  const updateCalendarEvent = useStore((s) => s.updateCalendarEvent)
-  const deleteCalendarEvent = useStore((s) => s.deleteCalendarEvent)
+  const tasks = useStore((s) => s.tasks)
+  const addTask = useStore((s) => s.addTask)
+  const updateTask = useStore((s) => s.updateTask)
+  const deleteTask = useStore((s) => s.deleteTask)
 
   const [view, setView] = useState('month')
   const [cursor, setCursor] = useState(() => new Date())
   const [selectedDay, setSelectedDay] = useState(() => startOfDay(new Date()))
   const [agendaStart, setAgendaStart] = useState(() => startOfDay(new Date()))
-  const [modal, setModal] = useState({ open: false, event: null })
+  const [modal, setModal] = useState({ open: false, item: null })
+
+  const displayEvents = useMemo(() => itemsToCalendarEvents(tasks), [tasks])
 
   const weekDays = useMemo(() => {
     const start = startOfWeekSunday(cursor)
@@ -120,19 +118,19 @@ export default function CalendarPage() {
 
   const openCreate = (day) => {
     setSelectedDay(startOfDay(day))
-    setModal({ open: true, event: null })
+    setModal({ open: true, item: null })
   }
 
-  const openEdit = (ev) => {
-    setModal({ open: true, event: ev })
+  const openEdit = (calEv) => {
+    const item = findItemByCalendarEvent(tasks, calEv)
+    setModal({ open: true, item: item ?? null })
   }
 
   const handleSave = (patch) => {
-    if (modal.event?.id) {
-      const merged = mergeCalendarPatch(modal.event, patch)
-      updateCalendarEvent(modal.event.id, merged)
+    if (modal.item?.id) {
+      updateTask(modal.item.id, patch)
     } else {
-      addCalendarEvent(mergeCalendarPatch(null, patch))
+      addTask(patch)
     }
   }
 
@@ -142,15 +140,15 @@ export default function CalendarPage() {
     const out = []
     for (let i = 0; i < 42; i += 1) {
       const d = addDays(agendaStart, i)
-      const evs = eventsTouchingDay(calendarEvents, d).sort(sortForDayList)
+      const evs = eventsTouchingDay(displayEvents, d).sort(sortForDayList)
       if (evs.length) out.push({ date: d, events: evs })
     }
     return out
-  }, [calendarEvents, agendaStart])
+  }, [displayEvents, agendaStart])
 
   const selectedDayEvents = useMemo(
-    () => eventsTouchingDay(calendarEvents, selectedDay).sort(sortForDayList),
-    [calendarEvents, selectedDay]
+    () => eventsTouchingDay(displayEvents, selectedDay).sort(sortForDayList),
+    [displayEvents, selectedDay]
   )
 
   return (
@@ -164,6 +162,9 @@ export default function CalendarPage() {
                 <CalendarIcon className="w-7 h-7 text-text-secondary" aria-hidden />
                 {title}
               </h1>
+              <p className="text-sm text-text-secondary mt-1 max-w-lg">
+                Tasks and events share one list — add or edit anything here or on the dashboard.
+              </p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <button type="button" onClick={goToday} className="retro-btn text-xs py-2">
@@ -211,7 +212,7 @@ export default function CalendarPage() {
                 className="retro-btn retro-btn-pink flex items-center gap-1.5 text-xs py-2"
               >
                 <Plus className="w-4 h-4" />
-                Create
+                Add item
               </button>
             </div>
           </div>
@@ -230,7 +231,7 @@ export default function CalendarPage() {
                       const inMonth = cell.getMonth() === cursor.getMonth()
                       const isToday = isSameDay(cell, new Date())
                       const isSelected = isSameDay(cell, selectedDay)
-                      const dayEvents = eventsTouchingDay(calendarEvents, cell)
+                      const dayEvents = eventsTouchingDay(displayEvents, cell)
                       return (
                         <button
                           key={`${toYMD(cell)}-${idx}`}
@@ -338,8 +339,8 @@ export default function CalendarPage() {
                     </div>
                     <div className="flex flex-1 min-w-0 divide-x divide-black/[0.06]">
                       {weekDays.map((d) => {
-                        const allDays = calendarEvents.filter((ev) => ev.allDay && eventsTouchingDay([ev], d).length)
-                        const timed = calendarEvents.filter((ev) => !ev.allDay && eventsTouchingDay([ev], d).length)
+                        const allDays = displayEvents.filter((ev) => ev.allDay && eventsTouchingDay([ev], d).length)
+                        const timed = displayEvents.filter((ev) => !ev.allDay && eventsTouchingDay([ev], d).length)
                         return (
                           <div
                             key={toYMD(d)}
@@ -411,7 +412,7 @@ export default function CalendarPage() {
                 <div className="retro-window overflow-hidden divide-y divide-black/[0.06]">
                   {agendaBlocks.length === 0 ? (
                     <div className="p-10 text-center text-text-secondary text-sm">
-                      No events in this range. Use Create or move forward with the arrows.
+                      No items in this range. Use Add item or set a due date when creating.
                     </div>
                   ) : (
                     agendaBlocks.map(({ date, events }) => (
@@ -439,11 +440,7 @@ export default function CalendarPage() {
                                 />
                                 <div className="min-w-0">
                                   <p className="font-semibold text-sm text-text-primary truncate">{ev.title}</p>
-                                  <p className="text-xs text-text-muted mt-0.5">
-                                    {ev.allDay
-                                      ? 'All day'
-                                      : formatRangeLabel(new Date(ev.start), new Date(ev.end))}
-                                  </p>
+                                  <p className="text-xs text-text-muted mt-0.5">{eventTimeLabel(ev)}</p>
                                   {ev.description ? (
                                     <p className="text-xs text-text-secondary mt-1 line-clamp-2">{ev.description}</p>
                                   ) : null}
@@ -466,7 +463,9 @@ export default function CalendarPage() {
               </div>
               <div className="p-3 space-y-2 max-h-[360px] overflow-y-auto">
                 {selectedDayEvents.length === 0 ? (
-                  <p className="text-xs text-text-muted py-2">No events. Double-click a day in month view or use Create.</p>
+                  <p className="text-xs text-text-muted py-2">
+                    Nothing scheduled. Use Add item below.
+                  </p>
                 ) : (
                   selectedDayEvents.map((ev) => (
                     <button
@@ -482,9 +481,7 @@ export default function CalendarPage() {
                         />
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-text-primary truncate">{ev.title}</p>
-                          <p className="text-[11px] text-text-muted">
-                            {ev.allDay ? 'All day' : formatRangeLabel(new Date(ev.start), new Date(ev.end))}
-                          </p>
+                          <p className="text-[11px] text-text-muted">{eventTimeLabel(ev)}</p>
                         </div>
                       </div>
                     </button>
@@ -498,7 +495,7 @@ export default function CalendarPage() {
                   className="retro-btn retro-btn-pink w-full text-xs py-2 flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" />
-                  Add event this day
+                  Add item
                 </button>
               </div>
             </aside>
@@ -507,13 +504,13 @@ export default function CalendarPage() {
 
         <AnimatePresence>
           {modal.open && (
-            <EventModal
+            <ItemModal
               open={modal.open}
-              onClose={() => setModal({ open: false, event: null })}
-              event={modal.event}
+              onClose={() => setModal({ open: false, item: null })}
+              item={modal.item}
               anchorDate={selectedDay}
               onSave={handleSave}
-              onDelete={modal.event?.id ? deleteCalendarEvent : undefined}
+              onDelete={modal.item?.id ? deleteTask : undefined}
             />
           )}
         </AnimatePresence>

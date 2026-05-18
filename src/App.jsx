@@ -8,7 +8,9 @@ import CalendarPage from './pages/CalendarPage'
 import DevelopersPage from './pages/DevelopersPage'
 import SupportResourcesPage from './pages/SupportResourcesPage'
 import useAuthStore from './store/useAuthStore'
-import { hydrateForUser } from './store/useStore'
+import useStore, { hydrateForUser } from './store/useStore'
+import { startFirestoreSync, stopFirestoreSync } from './lib/firestoreSync'
+import { isFirebaseConfigured } from './lib/firebase'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -28,7 +30,24 @@ function AuthenticatedApp() {
   const user = useAuthStore((s) => s.user)
 
   useEffect(() => {
-    if (user?.uid) hydrateForUser(user.uid)
+    if (!user?.uid) {
+      stopFirestoreSync()
+      return undefined
+    }
+
+    hydrateForUser(user.uid)
+
+    if (!isFirebaseConfigured) return undefined
+
+    const stopSync = startFirestoreSync(user.uid, {
+      getState: () => useStore.getState(),
+      setState: (partial) => useStore.setState(partial),
+      subscribe: useStore.subscribe,
+    })
+
+    return () => {
+      stopSync()
+    }
   }, [user?.uid])
 
   return (

@@ -47,7 +47,7 @@ export default function DashboardPage() {
             animate="animate"
             className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 auto-rows-min"
           >
-            <BentoCard span="lg:col-span-7" delay={0.1} variant="pink" title="Tasks">
+            <BentoCard span="lg:col-span-7" delay={0.1} variant="pink" title="Tasks & events">
               <TaskManager />
             </BentoCard>
 

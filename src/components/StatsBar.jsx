@@ -19,7 +19,7 @@ export default function StatsBar() {
   const dueWeek = open.filter((t) => t.dueDate && isDueWithinDays(t, 7, true)).length
 
   const stats = [
-    { label: 'Total tasks', value: total, icon: ListTodo, wrap: 'bg-[#f0f4f8] text-[#406080]' },
+    { label: 'Total items', value: total, icon: ListTodo, wrap: 'bg-[#f0f4f8] text-[#406080]' },
     { label: 'Completed', value: completed, icon: CheckCircle2, wrap: 'bg-[#e8f3ec] text-[#2f6f44]' },
     { label: 'In progress', value: inProgress, icon: Clock, wrap: 'bg-[#f7f3e8] text-[#7a6220]' },
     { label: 'Due (7 days)', value: dueWeek, icon: CalendarClock, wrap: 'bg-sky-50 text-sky-900' },
