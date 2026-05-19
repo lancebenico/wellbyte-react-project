@@ -2,6 +2,13 @@ import { useState, useEffect } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import { pad2, toYMD } from '../../lib/calendarUtils'
 import { ITEM_CATEGORIES, CATEGORY_LABELS } from '../../lib/items'
+import { getSubjectsForTerm, isAcademicTermConfigured } from '../../lib/courses'
+import useStore from '../../store/useStore'
+import {
+  AcademicConfigPrompt,
+  TaskTypePicker,
+  TaskSubjectSelect,
+} from '../TaskAcademicFields'
 
 const COLORS = [
   { id: 'blue', label: 'Blue', swatch: 'bg-[#1a73e8]' },
@@ -18,9 +25,12 @@ function timeFromDate(d) {
 }
 
 export default function ItemModal({ open, onClose, item, anchorDate, onSave, onDelete }) {
+  const profile = useStore((s) => s.profile)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('task')
+  const [subject, setSubject] = useState('')
+  const [taskType, setTaskType] = useState('')
   const [dueDate, setDueDate] = useState('')
   const [priority, setPriority] = useState('medium')
   const [status, setStatus] = useState('todo')
@@ -51,6 +61,8 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
         setTitle(item.title ?? '')
         setDescription(item.description ?? '')
         setCategory(item.category === 'event' ? 'event' : 'task')
+        setSubject(item.subject ?? '')
+        setTaskType(item.taskType ?? '')
         setDueDate(item.dueDate ?? '')
         setPriority(item.priority ?? 'medium')
         setStatus(item.status ?? 'todo')
@@ -82,6 +94,8 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
         setTitle('')
         setDescription('')
         setCategory('task')
+        setSubject('')
+        setTaskType('')
         setDueDate(ymd)
         setPriority('medium')
         setStatus('todo')
@@ -100,6 +114,12 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
 
   if (!open) return null
 
+  const academicReady = isAcademicTermConfigured(profile)
+  const subjects =
+    category === 'task' && academicReady
+      ? getSubjectsForTerm(profile.yearLevel, profile.semester)
+      : []
+
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!title.trim()) {
@@ -107,10 +127,27 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
       return
     }
 
+    if (category === 'task') {
+      if (!academicReady) {
+        setError('Configure your year and semester in Settings before adding a task.')
+        return
+      }
+      if (!subject) {
+        setError('Please select a subject.')
+        return
+      }
+      if (!taskType) {
+        setError('Please select a task type.')
+        return
+      }
+    }
+
     const patch = {
       title: title.trim(),
       description: description.trim(),
       category,
+      subject: category === 'task' ? subject : null,
+      taskType: category === 'task' ? taskType : null,
       dueDate: dueDate || null,
       priority,
       status,
@@ -217,7 +254,10 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
                 <button
                   key={cat}
                   type="button"
-                  onClick={() => setCategory(cat)}
+                  onClick={() => {
+                    setCategory(cat)
+                    setError('')
+                  }}
                   className={`flex-1 py-2 text-xs font-semibold rounded transition-colors ${
                     category === cat
                       ? 'bg-white shadow-sm text-text-primary'
@@ -247,6 +287,26 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
           </div>
 
           {category === 'task' && (
+            <div className="space-y-3">
+              {!academicReady ? (
+                <AcademicConfigPrompt />
+              ) : (
+                <>
+                  <TaskSubjectSelect
+                    subjects={subjects}
+                    value={subject}
+                    onChange={setSubject}
+                    profile={profile}
+                    selectId="calendar-task-subject"
+                    labelClass="text-xs"
+                  />
+                  <TaskTypePicker
+                    value={taskType}
+                    onChange={setTaskType}
+                    labelClass="text-xs"
+                  />
+                </>
+              )}
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-text-muted mb-1">Priority</label>
@@ -272,6 +332,7 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
                   <option value="completed">Done</option>
                 </select>
               </div>
+            </div>
             </div>
           )}
 

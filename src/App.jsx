@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from './components/Navbar'
+import OnboardingModal from './components/OnboardingModal'
 import AuthGuard from './components/AuthGuard'
 import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
@@ -30,6 +31,7 @@ function AnimatedRoutes() {
 
 function AuthenticatedApp() {
   const user = useAuthStore((s) => s.user)
+  const onboardingComplete = useStore((s) => s.profile?.onboardingComplete)
 
   useEffect(() => {
     if (!user?.uid) {
@@ -56,6 +58,7 @@ function AuthenticatedApp() {
     <div className="relative min-h-screen">
       <Navbar />
       <AnimatedRoutes />
+      {!onboardingComplete && <OnboardingModal />}
     </div>
   )
 }

@@ -21,6 +21,7 @@ function normalizeRemotePayload(data) {
     tasks,
     moodEntries: Array.isArray(data.moodEntries) ? data.moodEntries : [],
     pomodoroLog: data.pomodoroLog ?? { dateYmd: '', completedWorkSessions: 0 },
+    profile: data.profile ?? null,
   }
 }
 
@@ -41,6 +42,7 @@ export async function saveUserDataToFirestore(uid, state) {
       tasks: state.tasks ?? [],
       moodEntries: state.moodEntries ?? [],
       pomodoroLog: state.pomodoroLog ?? { dateYmd: '', completedWorkSessions: 0 },
+      profile: state.profile ?? null,
       updatedAt: serverTimestamp(),
     },
     { merge: true }
@@ -119,7 +121,8 @@ export function startFirestoreSync(uid, { getState, setState, subscribe }) {
     const changed =
       state.tasks !== prevState.tasks ||
       state.moodEntries !== prevState.moodEntries ||
-      state.pomodoroLog !== prevState.pomodoroLog
+      state.pomodoroLog !== prevState.pomodoroLog ||
+      state.profile !== prevState.profile
     if (changed) scheduleSave(uid, getState)
   })
 

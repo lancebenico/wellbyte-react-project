@@ -5,6 +5,13 @@ import { normalizeItem, migrateStoredItems } from '../lib/items'
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
+const defaultProfile = {
+  displayName: '',
+  yearLevel: '',
+  semester: '',
+  onboardingComplete: false,
+}
+
 let currentStorageName = 'wellbyte-storage'
 
 const useStore = create(
@@ -12,6 +19,7 @@ const useStore = create(
     (set, get) => ({
       tasks: [],
       moodEntries: [],
+      profile: { ...defaultProfile },
       filterStatus: 'all',
       filterPriority: 'all',
       filterDue: 'all',
@@ -77,6 +85,23 @@ const useStore = create(
       setFilterPriority: (priority) => set({ filterPriority: priority }),
       setFilterDue: (v) => set({ filterDue: v }),
       setFilterCategory: (v) => set({ filterCategory: v }),
+
+      setProfile: (updates) =>
+        set((state) => ({
+          profile: {
+            ...state.profile,
+            ...updates,
+          },
+        })),
+
+      completeOnboarding: (profileUpdates) =>
+        set((state) => ({
+          profile: {
+            ...state.profile,
+            ...profileUpdates,
+            onboardingComplete: true,
+          },
+        })),
 
       getFilteredTasks: () => {
         const { tasks, filterStatus, filterPriority, filterDue, filterCategory } = get()
@@ -158,6 +183,7 @@ const useStore = create(
         tasks: state.tasks,
         moodEntries: state.moodEntries,
         pomodoroLog: state.pomodoroLog,
+        profile: state.profile,
       }),
       merge: (persisted, current) => {
         const p = persisted?.state ?? persisted ?? {}
@@ -166,6 +192,7 @@ const useStore = create(
           ...current,
           ...p,
           tasks: tasks.map(normalizeItem),
+          profile: { ...defaultProfile, ...current.profile, ...p.profile },
         }
       },
     }
@@ -187,6 +214,7 @@ export function hydrateForUser(uid) {
         tasks: tasks.map(normalizeItem),
         moodEntries: data.moodEntries ?? [],
         pomodoroLog: data.pomodoroLog ?? { dateYmd: '', completedWorkSessions: 0 },
+        profile: { ...defaultProfile, ...data.profile },
         filterStatus: 'all',
         filterPriority: 'all',
         filterDue: 'all',
@@ -197,6 +225,7 @@ export function hydrateForUser(uid) {
         tasks: [],
         moodEntries: [],
         pomodoroLog: { dateYmd: '', completedWorkSessions: 0 },
+        profile: { ...defaultProfile },
         filterStatus: 'all',
         filterPriority: 'all',
         filterDue: 'all',
@@ -208,6 +237,7 @@ export function hydrateForUser(uid) {
       tasks: [],
       moodEntries: [],
       pomodoroLog: { dateYmd: '', completedWorkSessions: 0 },
+      profile: { ...defaultProfile },
       filterStatus: 'all',
       filterPriority: 'all',
       filterDue: 'all',

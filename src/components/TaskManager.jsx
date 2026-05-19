@@ -9,6 +9,13 @@ import useStore from '../store/useStore'
 import { taskItem, filterPill } from '../lib/animations'
 import { formatDueChip, formatShortDue } from '../lib/timeManagement'
 import { CATEGORY_LABELS, ITEM_CATEGORIES } from '../lib/items'
+import { getSubjectsForTerm, isAcademicTermConfigured } from '../lib/courses'
+import { TASK_TYPE_BADGE, taskTypeLabel } from '../lib/taskTypes'
+import {
+  AcademicConfigPrompt,
+  TaskTypePicker,
+  TaskSubjectSelect,
+} from './TaskAcademicFields'
 
 const STATUS_OPTIONS = [
   { value: 'all', label: 'All' },
@@ -78,17 +85,42 @@ function FilterPills({ options, value, onChange, label }) {
 
 function AddTaskForm({ onClose }) {
   const addTask = useStore((s) => s.addTask)
+  const profile = useStore((s) => s.profile)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [category, setCategory] = useState('task')
+  const [subject, setSubject] = useState('')
+  const [taskType, setTaskType] = useState('')
   const [priority, setPriority] = useState('medium')
   const [status, setStatus] = useState('todo')
   const [dueDate, setDueDate] = useState('')
   const [estimatedMinutes, setEstimatedMinutes] = useState('')
+  const [formError, setFormError] = useState('')
+
+  const academicReady = isAcademicTermConfigured(profile)
+  const subjects =
+    category === 'task' && academicReady
+      ? getSubjectsForTerm(profile.yearLevel, profile.semester)
+      : []
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!title.trim()) return
+    if (category === 'task') {
+      if (!academicReady) {
+        setFormError('Configure your year and semester in Settings before adding a task.')
+        return
+      }
+      if (!subject) {
+        setFormError('Please select a subject.')
+        return
+      }
+      if (!taskType) {
+        setFormError('Please select a task type.')
+        return
+      }
+    }
+    setFormError('')
     const est =
       estimatedMinutes === '' || Number.isNaN(Number(estimatedMinutes))
         ? null
@@ -97,6 +129,8 @@ function AddTaskForm({ onClose }) {
       title: title.trim(),
       description: description.trim(),
       category,
+      subject: category === 'task' ? subject : null,
+      taskType: category === 'task' ? taskType : null,
       priority,
       status,
       dueDate: dueDate || null,
@@ -135,7 +169,10 @@ function AddTaskForm({ onClose }) {
               <button
                 key={cat}
                 type="button"
-                onClick={() => setCategory(cat)}
+                onClick={() => {
+                  setCategory(cat)
+                  setFormError('')
+                }}
                 className={`flex-1 py-1.5 text-xs font-medium rounded transition-colors ${
                   category === cat
                     ? 'bg-text-primary text-white'
@@ -147,6 +184,31 @@ function AddTaskForm({ onClose }) {
             ))}
           </div>
         </div>
+
+        {category === 'task' && (
+          <>
+            {!academicReady ? (
+              <AcademicConfigPrompt />
+            ) : (
+              <>
+                <TaskSubjectSelect
+                  subjects={subjects}
+                  value={subject}
+                  onChange={setSubject}
+                  profile={profile}
+                />
+                <TaskTypePicker value={taskType} onChange={setTaskType} />
+              </>
+            )}
+          </>
+        )}
+
+        {formError && (
+          <p className="text-xs text-red-700 bg-red-50 border border-red-200 rounded-md px-2.5 py-2">
+            {formError}
+          </p>
+        )}
+
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <span className="block text-[11px] text-text-muted font-medium mb-1">Due date (optional)</span>
@@ -218,10 +280,18 @@ function AddTaskForm({ onClose }) {
 
 function TaskCard({ task }) {
   const { toggleTaskStatus, deleteTask, updateTask } = useStore()
+  const profile = useStore((s) => s.profile)
   const priority = PRIORITY_BADGE[task.priority]
   const status = STATUS_BADGE[task.status]
   const isCompleted = task.status === 'completed'
   const dueLabel = !isCompleted && task.dueDate ? formatDueChip(task) : null
+  const isTask = (task.category || 'task') === 'task'
+  const academicReady = isAcademicTermConfigured(profile)
+  const subjects = isTask && academicReady
+    ? getSubjectsForTerm(profile.yearLevel, profile.semester)
+    : []
+  const typeBadge = task.taskType ? TASK_TYPE_BADGE[task.taskType] : null
+  const typeLabel = taskTypeLabel(task.taskType)
 
   return (
     <motion.div
@@ -263,7 +333,14 @@ function TaskCard({ task }) {
                 <span className="px-1.5 py-0.5 rounded border text-[10px] font-medium bg-indigo-50 text-indigo-800 border-indigo-200">
                   {CATEGORY_LABELS[task.category] || 'Task'}
                 </span>
-                {(task.category || 'task') === 'task' && (
+                {isTask && typeBadge && typeLabel && (
+                  <span
+                    className={`px-1.5 py-0.5 rounded border text-[10px] font-semibold ${typeBadge.bg} ${typeBadge.text} ${typeBadge.border}`}
+                  >
+                    {typeLabel}
+                  </span>
+                )}
+                {isTask && (
                   <span className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded border text-[10px] font-medium ${priority.bg} ${priority.text} ${priority.border}`}>
                     <priority.icon className="w-2.5 h-2.5" />
                     {task.priority}
@@ -293,17 +370,53 @@ function TaskCard({ task }) {
               </div>
             </div>
 
+            {isTask && task.subject && (
+              <p className="text-[11px] text-cics-red-dark font-medium mt-0.5 leading-snug">{task.subject}</p>
+            )}
+
             {task.description && (
-              <p className="text-xs text-text-secondary leading-relaxed">{task.description}</p>
+              <p className="text-xs text-text-secondary leading-relaxed mt-1">{task.description}</p>
             )}
 
             {!isCompleted && (
               <details className="mt-2 group/plan">
                 <summary className="text-[11px] font-medium text-text-muted cursor-pointer list-none flex items-center gap-1 [&::-webkit-details-marker]:hidden">
                   <span className="group-open/plan:rotate-90 transition-transform inline-block">▸</span>
-                  Plan time
+                  {isTask ? 'Edit task' : 'Plan time'}
                 </summary>
-                <div className="mt-2 flex flex-wrap gap-3 items-end">
+                <div className="mt-2 space-y-3">
+                  {isTask && (
+                    <>
+                      {!academicReady ? (
+                        <AcademicConfigPrompt />
+                      ) : (
+                        <>
+                          <label className="flex flex-col gap-0.5 text-[10px] font-medium text-text-muted">
+                            Subject
+                            <select
+                              value={task.subject || ''}
+                              onChange={(e) =>
+                                updateTask(task.id, { subject: e.target.value || null })
+                              }
+                              className="retro-input text-xs py-1"
+                            >
+                              <option value="">Select subject…</option>
+                              {subjects.map((name) => (
+                                <option key={name} value={name}>
+                                  {name}
+                                </option>
+                              ))}
+                            </select>
+                          </label>
+                          <TaskTypePicker
+                            value={task.taskType || ''}
+                            onChange={(v) => updateTask(task.id, { taskType: v || null })}
+                          />
+                        </>
+                      )}
+                    </>
+                  )}
+                <div className="flex flex-wrap gap-3 items-end">
                   <label className="flex flex-col gap-0.5 text-[10px] font-medium text-text-muted">
                     Due
                     <input
@@ -333,6 +446,7 @@ function TaskCard({ task }) {
                   {task.dueDate && (
                     <span className="text-[10px] text-text-muted pb-1">{formatShortDue(task.dueDate)}</span>
                   )}
+                </div>
                 </div>
               </details>
             )}
