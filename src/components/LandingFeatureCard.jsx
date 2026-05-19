@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 
-export default function LandingFeatureCard({ icon: Icon, title, gradient, delay = 0 }) {
+export default function LandingFeatureCard({ icon: Icon, title, gradient, image, delay = 0 }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 16 }}
@@ -8,8 +8,16 @@ export default function LandingFeatureCard({ icon: Icon, title, gradient, delay 
       transition={{ delay, duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
       className="relative flex-1 min-h-[220px] sm:min-h-[280px] xl:min-h-[320px] rounded-[1.75rem] overflow-hidden shadow-[0_8px_32px_rgba(74,15,24,0.12)]"
     >
+      {image ? (
+        <img
+          src={image}
+          alt=""
+          className="absolute inset-0 w-full h-full object-cover"
+          aria-hidden
+        />
+      ) : null}
       <motion.div
-        className={`absolute inset-0 bg-gradient-to-br ${gradient}`}
+        className={`absolute inset-0 bg-gradient-to-br ${gradient} ${image ? 'opacity-60 mix-blend-multiply' : ''}`}
         aria-hidden
       />
       <div

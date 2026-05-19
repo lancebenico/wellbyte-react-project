@@ -6,24 +6,28 @@ const developers = [
   {
     name: 'Joaquin Adriano',
     initials: 'JA',
+    image: '/pictures/adriano.png',
     accentColor: '#9b2335',
     avatarGradient: 'linear-gradient(135deg, #e8c4c8, #6b1524)',
   },
   {
     name: 'Lance Benico',
     initials: 'LB',
+    image: '/pictures/benico.jfif',
     accentColor: '#6b1524',
     avatarGradient: 'linear-gradient(135deg, #fdf2f3, #4a0f18)',
   },
   {
     name: 'Kristine Cabanada',
     initials: 'KC',
+    image: '/pictures/cabanada.png',
     accentColor: '#9b2335',
     avatarGradient: 'linear-gradient(135deg, #fae8ea, #9b2335)',
   },
   {
     name: 'Warren Chua',
     initials: 'WC',
+    image: '/pictures/chua.jpg',
     accentColor: '#4a0f18',
     avatarGradient: 'linear-gradient(135deg, #e8c4c8, #4a0f18)',
   },

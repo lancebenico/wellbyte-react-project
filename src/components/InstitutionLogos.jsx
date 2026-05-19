@@ -1,11 +1,6 @@
-/**
- * Swap placeholder paths with your official assets:
- *   public/logos/ust-logo.png
- *   public/logos/cics-logo.png
- */
 export const LOGO_PATHS = {
-  ust: '/logos/ust-logo-placeholder.svg',
-  cics: '/logos/cics-logo-placeholder.svg',
+  ust: '/pictures/univlogo.png',
+  cics: '/pictures/collegelogo.png',
 }
 
 export default function InstitutionLogos({ className = '', size = 'md' }) {

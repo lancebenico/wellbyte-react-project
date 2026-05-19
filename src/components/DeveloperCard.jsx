@@ -15,9 +15,17 @@ export default function DeveloperCard({ developer }) {
             borderColor: developer.accentColor,
           }}
         >
-          <div className="w-full h-full flex items-center justify-center text-lg font-semibold text-white/95">
-            {developer.initials}
-          </div>
+          {developer.image ? (
+            <img
+              src={developer.image}
+              alt={developer.name}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-lg font-semibold text-white/95">
+              {developer.initials}
+            </div>
+          )}
         </div>
 
         <h3 className="text-lg font-semibold text-text-primary">{developer.name}</h3>

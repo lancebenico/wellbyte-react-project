@@ -26,11 +26,13 @@ const FEATURE_CARDS = {
       icon: Building2,
       title: 'A Heritage of Excellence in Computing Education',
       gradient: 'from-cics-red-dark via-cics-red to-cics-red-muted',
+      image: '/pictures/home1.jpg',
     },
     {
       icon: Users,
       title: 'A Community That Welcomes and Supports You',
       gradient: 'from-cics-red-deep via-cics-red-dark to-cics-red',
+      image: '/pictures/home2.jpg',
     },
   ],
   right: [
@@ -38,11 +40,13 @@ const FEATURE_CARDS = {
       icon: Sparkles,
       title: 'Planning and Habits You Can Rely On',
       gradient: 'from-[#5c0010] via-cics-red-dark to-cics-red',
+      image: '/pictures/home3.jpg',
     },
     {
       icon: Heart,
       title: 'Experiences That Nurture Lasting Well-Being',
       gradient: 'from-cics-red via-cics-red-muted to-cics-red-light',
+      image: '/pictures/home4.jpg',
     },
   ],
 }
