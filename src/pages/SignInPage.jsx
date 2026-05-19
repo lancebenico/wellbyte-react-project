@@ -1,25 +1,23 @@
 import { motion } from 'framer-motion'
-import { Shield, BookOpen, Heart, AlertTriangle } from 'lucide-react'
+import { Shield, BookOpen, Heart, AlertTriangle, Sparkles, GraduationCap } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
+import InstitutionLogos from '../components/InstitutionLogos'
 
 const features = [
   {
     icon: BookOpen,
     title: 'Track your tasks',
     description: 'Organize assignments, goals, and daily habits in one calm view.',
-    color: 'bg-sky-50 text-sky-800 border-sky-200',
   },
   {
     icon: Heart,
-    title: 'Monitor wellness',
-    description: 'Log mood over time and notice patterns without the noise.',
-    color: 'bg-rose-50 text-rose-900 border-rose-200',
+    title: 'Prioritize wellness',
+    description: 'Log mood over time and take breaks with the Pomodoro timer.',
   },
   {
     icon: Shield,
     title: 'Private & secure',
     description: 'Your data stays yours, synced to your UST CICS Google account.',
-    color: 'bg-emerald-50 text-emerald-800 border-emerald-200',
   },
 ]
 
@@ -38,118 +36,183 @@ export default function SignInPage() {
   const { signInWithGoogle, error, configured } = useAuthStore()
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-16">
-      <motion.div
-        initial={{ opacity: 0, y: 16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full max-w-md"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.06 }}
-          className="text-center mb-10"
-        >
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary mb-2">
-            Welcome to WellByte
-          </h1>
-          <p className="text-[15px] text-text-secondary leading-relaxed">
-            Your productivity and wellness workspace — clear, quiet, and focused. Framed around the spirit of UN SDGs 3 and 4.
-          </p>
-          <p className="text-sm text-text-muted mt-4 leading-relaxed max-w-sm mx-auto">
-            Sign-in is limited to <span className="font-mono text-text-secondary">*.cics@ust.edu.ph</span>{' '}
-            (UST CICS Google Workspace).
-          </p>
-        </motion.div>
+    <div className="relative min-h-screen overflow-hidden bg-[#faf9f7]">
+      {/* Background accents */}
+      <div
+        className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-cics-red/10 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute -bottom-32 -left-20 h-80 w-80 rounded-full bg-cics-red-muted/40 blur-3xl"
+        aria-hidden
+      />
+      <div
+        className="pointer-events-none absolute top-1/3 left-1/2 h-48 w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-cics-red-light/60 blur-2xl"
+        aria-hidden
+      />
 
+      <div className="relative flex min-h-screen items-center justify-center px-4 py-12 sm:py-16">
         <motion.div
-          initial={{ opacity: 0, y: 8 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.12 }}
-          className="retro-window overflow-hidden mb-8"
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="w-full max-w-md"
         >
-          <div className="retro-titlebar">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted">Sign in</span>
-          </div>
-          <div className="p-6">
-            {!configured && (
-              <motion.div
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mb-5 flex items-start gap-3 p-4 rounded-md bg-amber-50 border border-amber-200"
+          <InstitutionLogos className="mb-8" size="md" />
+
+          {/* Brand banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08 }}
+            className="rounded-2xl bg-cics-red-deep px-6 py-5 text-center shadow-[0_12px_40px_rgba(74,15,24,0.22)] mb-6"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-cics-red-muted">
+              University of Santo Tomas
+            </p>
+            <p className="text-2xl sm:text-3xl font-bold tracking-tight text-white mt-1">WellByte</p>
+            <p className="text-xs text-white/75 mt-2 font-medium">
+              College of Information and Computing Sciences
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.12 }}
+            className="text-center mb-6"
+          >
+            <h1 className="text-xl sm:text-2xl font-bold text-text-primary tracking-tight mb-2">
+              Welcome back, Thomasian
+            </h1>
+            <p className="text-sm text-text-secondary leading-relaxed max-w-sm mx-auto">
+              Your productivity and wellness companion — clear, calm, and focused. Framed around the spirit
+              of UN SDGs 3 and 4.
+            </p>
+          </motion.div>
+
+          {/* Sign-in card */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.16 }}
+            className="retro-window retro-window-pink overflow-hidden mb-6 shadow-[0_8px_30px_rgba(74,15,24,0.08)]"
+          >
+            <div className="retro-titlebar flex items-center gap-2">
+              <GraduationCap className="w-3.5 h-3.5 text-cics-red" aria-hidden />
+              <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-cics-red-dark">
+                Sign in
+              </span>
+            </div>
+
+            <div className="p-5 sm:p-6 bg-white">
+              <div className="rounded-xl border border-cics-red/12 bg-cics-red-light/60 px-3.5 py-3 mb-5">
+                <p className="text-xs text-cics-red-dark leading-relaxed text-center">
+                  Sign-in is limited to{' '}
+                  <span className="font-mono font-semibold text-cics-red-deep">*.cics@ust.edu.ph</span>{' '}
+                  UST CICS Google Workspace accounts.
+                </p>
+              </div>
+
+              {!configured && (
+                <motion.div
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mb-5 flex items-start gap-3 p-4 rounded-xl bg-amber-50 border border-amber-200"
+                >
+                  <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <p className="text-sm font-semibold text-amber-900 mb-1">Firebase not configured</p>
+                    <p className="text-xs text-amber-800/90 leading-relaxed">
+                      Copy <code className="px-1 py-0.5 rounded bg-amber-100/80 text-amber-900 text-[11px] font-mono">.env.example</code> to{' '}
+                      <code className="px-1 py-0.5 rounded bg-amber-100/80 text-amber-900 text-[11px] font-mono">.env</code> and add your
+                      Firebase project credentials, then restart the dev server.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+              <motion.button
+                whileHover={{ scale: configured ? 1.01 : 1 }}
+                whileTap={{ scale: configured ? 0.99 : 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+                onClick={signInWithGoogle}
+                disabled={!configured}
+                className="
+                  retro-btn w-full flex items-center justify-center gap-3
+                  py-3 text-sm font-semibold bg-white border-cics-red/20
+                  hover:border-cics-red/35 hover:bg-cics-red-light/30
+                  disabled:opacity-40 disabled:cursor-not-allowed
+                "
               >
-                <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                <GoogleIcon />
+                Continue with Google
+              </motion.button>
+
+              {error && (
+                <motion.p
+                  initial={{ opacity: 0, y: -4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 text-sm text-red-800 text-center bg-red-50 border border-red-200 rounded-xl px-4 py-2.5 font-medium"
+                >
+                  {error}
+                </motion.p>
+              )}
+
+              <div className="mt-5 flex items-center gap-3">
+                <div className="flex-1 h-px bg-cics-red/15" />
+                <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-cics-red-dark/70">
+                  Secure access
+                </span>
+                <div className="flex-1 h-px bg-cics-red/15" />
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Feature highlights */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.22 }}
+            className="space-y-2.5 mb-6"
+          >
+            {features.map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.24 + i * 0.06 }}
+                className="flex items-start gap-3 p-3.5 rounded-xl bg-white border border-cics-red/10 shadow-sm hover:border-cics-red/25 hover:shadow-[0_4px_16px_rgba(74,15,24,0.06)] transition-all duration-200"
+              >
+                <div className="w-10 h-10 rounded-lg bg-cics-red flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <feature.icon className="w-4 h-4 text-white" strokeWidth={2} />
+                </div>
                 <div>
-                  <p className="text-sm font-semibold text-amber-900 mb-1">Firebase not configured</p>
-                  <p className="text-xs text-amber-800/90 leading-relaxed">
-                    Copy <code className="px-1 py-0.5 rounded bg-amber-100/80 text-amber-900 text-[11px] font-mono">.env.example</code> to{' '}
-                    <code className="px-1 py-0.5 rounded bg-amber-100/80 text-amber-900 text-[11px] font-mono">.env</code> and add your
-                    Firebase project credentials, then restart the dev server.
-                  </p>
+                  <p className="text-sm font-semibold text-cics-red-deep">{feature.title}</p>
+                  <p className="text-xs text-text-secondary leading-relaxed mt-0.5">{feature.description}</p>
                 </div>
               </motion.div>
-            )}
+            ))}
+          </motion.div>
 
-            <motion.button
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-              onClick={signInWithGoogle}
-              disabled={!configured}
-              className="
-                retro-btn w-full flex items-center justify-center gap-3
-                py-3 text-sm font-semibold bg-white
-                disabled:opacity-40 disabled:cursor-not-allowed
-              "
-            >
-              <GoogleIcon />
-              Continue with Google
-            </motion.button>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="mt-4 text-sm text-red-700 text-center bg-red-50 border border-red-200 rounded-md px-4 py-2.5 font-medium"
-              >
-                {error}
-              </motion.p>
-            )}
-
-            <div className="mt-6 flex items-center gap-3">
-              <div className="flex-1 h-px bg-black/[0.06]" />
-              <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-text-muted">Firebase auth</span>
-              <div className="flex-1 h-px bg-black/[0.06]" />
-            </div>
-          </div>
+          {/* SDG footer */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.38 }}
+            className="flex flex-wrap items-center justify-center gap-2"
+          >
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-cics-red/15 bg-cics-red-light/80 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-cics-red-dark">
+              <Sparkles className="w-3 h-3 text-cics-red" aria-hidden />
+              SDG 3 · Good Health
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-cics-red/15 bg-cics-red-light/80 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-cics-red-dark">
+              <Sparkles className="w-3 h-3 text-cics-red" aria-hidden />
+              SDG 4 · Quality Education
+            </span>
+          </motion.div>
         </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="space-y-2"
-        >
-          {features.map((feature, i) => (
-            <motion.div
-              key={feature.title}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.22 + i * 0.06 }}
-              className="flex items-start gap-3 p-3 rounded-md bg-white border border-black/[0.06] hover:border-black/[0.1] transition-colors"
-            >
-              <div className={`w-9 h-9 rounded-md border flex items-center justify-center flex-shrink-0 ${feature.color}`}>
-                <feature.icon className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-text-primary">{feature.title}</p>
-                <p className="text-xs text-text-muted leading-relaxed mt-0.5">{feature.description}</p>
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
-      </motion.div>
+      </div>
     </div>
   )
 }
