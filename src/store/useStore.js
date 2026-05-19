@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { toLocalYMD, isTaskOverdue, isDueWithinDays } from '../lib/timeManagement'
 import { normalizeItem, migrateStoredItems } from '../lib/items'
+import { fetchQuoteForMood, getLatestMoodValue } from '../lib/quotesApi'
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -138,43 +139,27 @@ const useStore = create(
           }
         }),
 
-      addMoodEntry: (entry) =>
+      addMoodEntry: (entry) => {
         set((state) => ({
           moodEntries: [
             { ...entry, id: generateId(), timestamp: new Date().toISOString() },
             ...state.moodEntries,
           ],
-        })),
+        }))
+        get().fetchQuote(entry.mood)
+      },
 
       setQuote: (quote) => set({ quote }),
       setQuoteLoading: (loading) => set({ quoteLoading: loading }),
 
-      fetchQuote: async () => {
+      fetchQuote: async (moodOverride) => {
         set({ quoteLoading: true })
-        try {
-          const res = await fetch('https://api.quotable.io/quotes/random?tags=wisdom|happiness|life')
-          if (res.ok) {
-            const data = await res.json()
-            if (data && data[0]) {
-              set({ quote: { text: data[0].content, author: data[0].author }, quoteLoading: false })
-              return
-            }
-          }
-          throw new Error('API unavailable')
-        } catch {
-          const fallbacks = [
-            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
-            { text: "Well-being is attained little by little, and is no little thing itself.", author: "Zeno of Citium" },
-            { text: "Take care of your body. It's the only place you have to live.", author: "Jim Rohn" },
-            { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
-            { text: "The mind is everything. What you think you become.", author: "Buddha" },
-            { text: "Happiness is not something ready-made. It comes from your own actions.", author: "Dalai Lama" },
-          ]
-          set({
-            quote: fallbacks[Math.floor(Math.random() * fallbacks.length)],
-            quoteLoading: false,
-          })
-        }
+        const mood =
+          moodOverride != null && moodOverride !== ''
+            ? Number(moodOverride)
+            : getLatestMoodValue(get().moodEntries)
+        const quote = await fetchQuoteForMood(mood)
+        set({ quote, quoteLoading: false })
       },
     }),
     {

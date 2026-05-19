@@ -2,13 +2,15 @@ import { useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RefreshCw, Quote } from 'lucide-react'
 import useStore from '../store/useStore'
+import { moodLabelForQuote } from '../lib/quotesApi'
 
 export default function WellnessQuote() {
-  const { quote, quoteLoading, fetchQuote } = useStore()
+  const { quote, quoteLoading, fetchQuote, moodEntries } = useStore()
+  const latestMood = moodEntries[0]?.mood
 
   useEffect(() => {
-    if (!quote) fetchQuote()
-  }, [quote, fetchQuote])
+    fetchQuote()
+  }, [latestMood, fetchQuote])
 
   return (
     <div className="flex flex-col justify-between h-full min-h-[160px]">
@@ -17,7 +19,14 @@ export default function WellnessQuote() {
           <div className="w-8 h-8 rounded-md bg-[#f0f0ef] border border-black/[0.06] flex items-center justify-center">
             <Quote className="w-4 h-4 text-text-secondary" aria-hidden />
           </div>
-          <h3 className="text-sm font-semibold text-text-primary">Daily inspiration</h3>
+          <div>
+            <h3 className="text-sm font-semibold text-text-primary">Daily inspiration</h3>
+            {(quote?.mood ?? latestMood) && moodLabelForQuote(quote?.mood ?? latestMood) && (
+              <p className="text-[10px] text-text-muted mt-0.5">
+                For your {moodLabelForQuote(quote?.mood ?? latestMood)} mood
+              </p>
+            )}
+          </div>
         </div>
         <motion.button
           whileHover={{ scale: 1.04 }}

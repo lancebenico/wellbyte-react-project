@@ -18,6 +18,7 @@ import LandingFeatureCard from '../components/LandingFeatureCard'
 import useAuthStore from '../store/useAuthStore'
 import useStore from '../store/useStore'
 import { getTaskSummary } from '../lib/taskStats'
+import { moodLabelForQuote } from '../lib/quotesApi'
 
 const FEATURE_CARDS = {
   left: [
@@ -81,15 +82,16 @@ function StatPill({ label, value }) {
 export default function HomePage() {
   const user = useAuthStore((s) => s.user)
   const tasks = useStore((s) => s.tasks)
-  const { quote, quoteLoading, fetchQuote } = useStore()
+  const { quote, quoteLoading, fetchQuote, moodEntries } = useStore()
   const { dateLabel, timeLabel } = useLiveClock()
   const summary = getTaskSummary(tasks)
+  const latestMood = moodEntries[0]?.mood
 
   const displayName = user?.displayName?.trim() || user?.email?.split('@')[0] || 'Thomasian'
 
   useEffect(() => {
-    if (!quote) fetchQuote()
-  }, [quote, fetchQuote])
+    fetchQuote()
+  }, [latestMood, fetchQuote])
 
   return (
     <PageTransition>
@@ -147,9 +149,16 @@ export default function HomePage() {
                     <div className="w-8 h-8 rounded-full bg-cics-red flex items-center justify-center">
                       <Quote className="w-4 h-4 text-white" />
                     </div>
-                    <h2 className="text-xs font-bold uppercase tracking-wide text-cics-red-dark">
-                      Quote of the Day
-                    </h2>
+                    <div>
+                      <h2 className="text-xs font-bold uppercase tracking-wide text-cics-red-dark">
+                        Quote of the Day
+                      </h2>
+                      {(quote?.mood ?? latestMood) && moodLabelForQuote(quote?.mood ?? latestMood) && (
+                        <p className="text-[10px] text-text-muted mt-0.5">
+                          For your {moodLabelForQuote(quote?.mood ?? latestMood)} mood
+                        </p>
+                      )}
+                    </div>
                   </div>
                   <button
                     type="button"
