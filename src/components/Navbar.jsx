@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from 'react'
 import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Home, LayoutDashboard, Calendar, HeartHandshake, Users, LogOut, ChevronDown } from 'lucide-react'
+import { Home, LayoutDashboard, Calendar, HeartHandshake, Users, LogOut, ChevronDown, Settings } from 'lucide-react'
 import useAuthStore from '../store/useAuthStore'
+import SettingsModal, { OPEN_SETTINGS_EVENT } from './SettingsModal'
 
 const links = [
   { to: '/', label: 'Home', icon: Home },
@@ -12,7 +13,7 @@ const links = [
   { to: '/developers', label: 'Developers', icon: Users },
 ]
 
-function UserMenu() {
+function UserMenu({ onOpenSettings }) {
   const { user, signOut } = useAuthStore()
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
@@ -107,6 +108,17 @@ function UserMenu() {
                 type="button"
                 onClick={() => {
                   setOpen(false)
+                  onOpenSettings()
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/[0.04] transition-colors"
+              >
+                <Settings className="w-4 h-4" />
+                Settings
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false)
                   signOut()
                 }}
                 className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/[0.04] transition-colors"
@@ -123,7 +135,17 @@ function UserMenu() {
 }
 
 export default function Navbar() {
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  useEffect(() => {
+    const handler = () => setSettingsOpen(true)
+    window.addEventListener(OPEN_SETTINGS_EVENT, handler)
+    return () => window.removeEventListener(OPEN_SETTINGS_EVENT, handler)
+  }, [])
+
   return (
+    <>
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     <motion.nav
       initial={{ y: -8, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
@@ -161,9 +183,10 @@ export default function Navbar() {
             })}
           </div>
 
-          <UserMenu />
+          <UserMenu onOpenSettings={() => setSettingsOpen(true)} />
         </div>
       </div>
     </motion.nav>
+    </>
   )
 }

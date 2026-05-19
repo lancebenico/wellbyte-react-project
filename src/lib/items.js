@@ -1,4 +1,5 @@
 import { toYMD } from './calendarUtils'
+import { isValidTaskType } from './taskTypes'
 
 export const ITEM_CATEGORIES = ['task', 'event']
 
@@ -38,6 +39,9 @@ export function normalizeItem(raw) {
     start: raw.start || null,
     end: raw.end || null,
     color: raw.color || (category === 'event' ? 'blue' : null),
+    subject: category === 'task' ? raw.subject?.trim() || null : null,
+    taskType:
+      category === 'task' && isValidTaskType(raw?.taskType) ? raw.taskType : null,
     createdAt: raw.createdAt || new Date().toISOString(),
   }
 }
