@@ -1,7 +1,10 @@
 import { useState, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, LayoutGrid, Columns2, List } from 'lucide-react'
-import PageTransition from '../components/PageTransition'
+import PageTransition from '../components/ui/PageTransition'
+import PageWrapper from '../components/layout/PageWrapper'
+import SectionHeader from '../components/common/SectionHeader'
+import { PAGE_COPY } from '../utils/constants/pages'
 import ItemModal from '../components/calendar/ItemModal'
 import useStore from '../store/useStore'
 import { itemsToCalendarEvents, findItemByCalendarEvent } from '../lib/itemCalendar'
@@ -153,23 +156,22 @@ export default function CalendarPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
-        <div className="mx-auto max-w-6xl">
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6">
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-cics-red mb-1">
-                Academic Calendar
-              </p>
-              <h1 className="text-2xl font-semibold tracking-tight text-text-primary flex items-center gap-2">
-                <CalendarIcon className="w-7 h-7 text-cics-red" aria-hidden />
-                {title}
-              </h1>
-              <p className="text-sm text-text-secondary mt-1 max-w-lg leading-relaxed">
-                View and manage your tasks and events in one place. Every item you create here appears
-                on your Dashboard and syncs across your devices.
-              </p>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
+      <PageWrapper>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 w-full min-w-0">
+          <div className="min-w-0 flex-1">
+            <SectionHeader
+              eyebrow={PAGE_COPY.calendar.eyebrow}
+              title={
+                <span className="flex items-center gap-2 flex-wrap">
+                  <CalendarIcon className="w-7 h-7 text-cics-red shrink-0" aria-hidden />
+                  {title}
+                </span>
+              }
+              subtitle={PAGE_COPY.calendar.subtitle}
+              className="mb-0"
+            />
+          </div>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button type="button" onClick={goToday} className="retro-btn text-xs py-2">
                 Today
               </button>
@@ -503,7 +505,6 @@ export default function CalendarPage() {
               </div>
             </aside>
           </div>
-        </div>
 
         <AnimatePresence>
           {modal.open && (
@@ -517,7 +518,7 @@ export default function CalendarPage() {
             />
           )}
         </AnimatePresence>
-      </div>
+      </PageWrapper>
     </PageTransition>
   )
 }

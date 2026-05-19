@@ -1,5 +1,8 @@
 import { Mail, MapPin, Phone } from 'lucide-react'
-import PageTransition from '../components/PageTransition'
+import PageTransition from '../components/ui/PageTransition'
+import PageWrapper from '../components/layout/PageWrapper'
+import SectionHeader from '../components/common/SectionHeader'
+import { PAGE_COPY } from '../utils/constants/pages'
 
 function Tel({ children, number }) {
   const href = `tel:${number.replace(/\D/g, '')}`
@@ -25,19 +28,14 @@ function Section({ title, children }) {
 export default function SupportResourcesPage() {
   return (
     <PageTransition>
-      <div className="min-h-screen pt-20 pb-16 px-4 sm:px-6">
-        <div className="mx-auto max-w-3xl space-y-6">
-          <header className="mb-2">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-text-muted mb-1">Help &amp; support</p>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight text-text-primary">
-              UST wellness &amp; crisis resources
-            </h1>
-            <p className="text-sm text-text-secondary mt-2 leading-relaxed">
-              Quick contacts for counseling, hospital care, spiritual support, and national crisis lines. If you are in
-              immediate danger, contact local emergency services. For urgent mental health crises, use the hospital
-              hotline or national hotlines below.
-            </p>
-          </header>
+      <PageWrapper maxWidth="max-w-3xl">
+        <div className="space-y-6 w-full min-w-0">
+          <SectionHeader
+            eyebrow={PAGE_COPY.support.eyebrow}
+            title={PAGE_COPY.support.title}
+            subtitle={`${PAGE_COPY.support.subtitle} For urgent mental health crises, use the hospital hotline or national hotlines below.`}
+            className="mb-2"
+          />
 
           <Section title="Counseling &amp; career">
             <h2 className="text-base font-semibold text-text-primary">UST Counseling and Career Center (CCC)</h2>
@@ -190,7 +188,7 @@ export default function SupportResourcesPage() {
             Information provided for convenience; confirm details with each office. WellByte is not affiliated with UST.
           </p>
         </div>
-      </div>
+      </PageWrapper>
     </PageTransition>
   )
 }

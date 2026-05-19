@@ -3,13 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import confetti from 'canvas-confetti'
 import useStore from '../store/useStore'
 
-const MOODS = [
-  { value: 5, emoji: '😄', label: 'Amazing', color: '#10b981', bg: 'bg-emerald-50 border-emerald-200' },
-  { value: 4, emoji: '😊', label: 'Good', color: '#3b82f6', bg: 'bg-sky-50 border-sky-200' },
-  { value: 3, emoji: '😐', label: 'Okay', color: '#d97706', bg: 'bg-amber-50 border-amber-200' },
-  { value: 2, emoji: '😔', label: 'Low', color: '#7c3aed', bg: 'bg-violet-50 border-violet-200' },
-  { value: 1, emoji: '😢', label: 'Rough', color: '#db2777', bg: 'bg-pink-50 border-pink-200' },
-]
+import { MOODS } from '../utils/constants/moods'
 
 function triggerCelebration(color) {
   const colors = [color, '#e8e8e7', '#2383e2', '#c5e0d0', '#d4d4d4']
