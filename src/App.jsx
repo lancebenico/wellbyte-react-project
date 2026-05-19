@@ -14,6 +14,7 @@ import useAuthStore from './store/useAuthStore'
 import useStore, { hydrateForUser } from './store/useStore'
 import { startFirestoreSync, stopFirestoreSync } from './lib/firestoreSync'
 import { isFirebaseConfigured } from './lib/firebase'
+import { AppProvider } from './context/AppContext'
 
 function AnimatedRoutes() {
   const location = useLocation()
@@ -74,10 +75,12 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <ScrollRestoration />
-      <AuthGuard>
-        <AuthenticatedApp />
-      </AuthGuard>
+      <AppProvider>
+        <ScrollRestoration />
+        <AuthGuard>
+          <AuthenticatedApp />
+        </AuthGuard>
+      </AppProvider>
     </BrowserRouter>
   )
 }

@@ -7,9 +7,8 @@ import PageWrapper from '../components/layout/PageWrapper'
 import InstitutionLogos from '../components/home/InstitutionLogos'
 import LandingFeatureCard from '../components/home/LandingFeatureCard'
 import AboutSection from '../components/home/AboutSection'
-import useAuthStore from '../store/useAuthStore'
+import { useAppContext } from '../context/AppContext'
 import useStore from '../store/useStore'
-import { getPreferredDisplayName } from '../utils/getPreferredDisplayName'
 import { getTaskSummary } from '../lib/taskStats'
 import { moodLabelForQuote } from '../lib/quotesApi'
 import useLiveClock from '../hooks/useLiveClock'
@@ -25,15 +24,12 @@ function StatPill({ label, value }) {
 }
 
 export default function HomePage() {
-  const user = useAuthStore((s) => s.user)
-  const profile = useStore((s) => s.profile)
+  const { preferredDisplayName: displayName } = useAppContext()
   const tasks = useStore((s) => s.tasks)
   const { quote, quoteLoading, fetchQuote, moodEntries } = useStore()
   const { dateLabel, timeLabel } = useLiveClock()
   const summary = getTaskSummary(tasks)
   const latestMood = moodEntries[0]?.mood
-
-  const displayName = getPreferredDisplayName(profile, user)
 
   useEffect(() => {
     fetchQuote()

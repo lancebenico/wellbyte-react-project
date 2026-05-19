@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react'
 import { X, Settings } from 'lucide-react'
+import useAuthStore from '../../store/useAuthStore'
 import useStore from '../../store/useStore'
 import AcademicProfileFields from '../profile/AcademicProfileFields'
 import { isAcademicTermConfigured } from '../../lib/courses'
+import { flushFirestoreSave } from '../../lib/firestoreSync'
 
 export const OPEN_SETTINGS_EVENT = 'wellbyte:open-settings'
 
@@ -17,6 +19,7 @@ export default function SettingsModal({ open, onClose }) {
   const [yearLevel, setYearLevel] = useState('')
   const [semester, setSemester] = useState('')
   const [error, setError] = useState('')
+  const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -37,7 +40,7 @@ export default function SettingsModal({ open, onClose }) {
 
   if (!open) return null
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!displayName.trim()) {
       setError('Please enter your preferred name.')
@@ -47,11 +50,24 @@ export default function SettingsModal({ open, onClose }) {
       setError('Please select your year level and semester.')
       return
     }
+    setSaving(true)
+    setError('')
     setProfile({
       displayName: displayName.trim(),
       yearLevel,
       semester,
     })
+    const uid = useAuthStore.getState().user?.uid
+    if (uid) {
+      try {
+        await flushFirestoreSave(() => useStore.getState())
+      } catch {
+        setError('Saved locally, but cloud sync failed. Try saving again.')
+        setSaving(false)
+        return
+      }
+    }
+    setSaving(false)
     onClose()
   }
 
@@ -107,8 +123,12 @@ export default function SettingsModal({ open, onClose }) {
             <button type="button" onClick={onClose} className="retro-btn text-text-secondary">
               Cancel
             </button>
-            <button type="submit" className="retro-btn retro-btn-pink font-semibold">
-              Save changes
+            <button
+              type="submit"
+              disabled={saving}
+              className="retro-btn retro-btn-pink font-semibold disabled:opacity-60"
+            >
+              {saving ? 'Saving…' : 'Save changes'}
             </button>
           </div>
         </form>

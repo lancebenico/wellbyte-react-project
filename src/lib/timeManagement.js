@@ -35,6 +35,17 @@ export function daysFromToday(ymd) {
   return Math.round((t.getTime() - today.getTime()) / 86400000)
 }
 
+/** True when YMD is strictly before today (local calendar). */
+export function isPastYMD(ymd) {
+  const d = daysFromToday(ymd)
+  return d !== null && d < 0
+}
+
+/** `min` attribute for HTML date inputs on new items. */
+export function minDateForNewItem() {
+  return toLocalYMD()
+}
+
 export function isTaskOverdue(task) {
   if (!task?.dueDate || task.status === 'completed') return false
   const due = parseLocalYMD(task.dueDate)

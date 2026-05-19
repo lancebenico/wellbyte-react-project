@@ -1,6 +1,7 @@
 import { doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore'
 import { db, isFirebaseConfigured } from './firebase'
 import { migrateStoredItems, normalizeItem } from './items'
+import { hasPersistedProfile, mergeProfiles } from './profileMerge'
 
 const SAVE_DEBOUNCE_MS = 900
 
@@ -59,12 +60,16 @@ function scheduleSave(uid, getState) {
   }, SAVE_DEBOUNCE_MS)
 }
 
-function applyRemoteData(data, setState) {
+function applyRemoteData(data, setState, getState) {
   const normalized = normalizeRemotePayload(data)
   if (!normalized) return
 
   applyingRemote = true
-  setState(normalized)
+  const local = getState()
+  setState({
+    ...normalized,
+    profile: mergeProfiles(local.profile, normalized.profile),
+  })
   applyingRemote = false
 }
 
@@ -72,8 +77,18 @@ function hasUserContent(state) {
   return (
     (state.tasks?.length ?? 0) > 0 ||
     (state.moodEntries?.length ?? 0) > 0 ||
-    (state.pomodoroLog?.completedWorkSessions ?? 0) > 0
+    (state.pomodoroLog?.completedWorkSessions ?? 0) > 0 ||
+    hasPersistedProfile(state.profile)
   )
+}
+
+/** Immediately persist current store to Firestore (e.g. after profile save). */
+export function flushFirestoreSave(getState) {
+  const uid = currentUid
+  if (!db || !uid || applyingRemote) return Promise.resolve()
+  clearTimeout(saveTimer)
+  saveTimer = null
+  return saveUserDataToFirestore(uid, getState())
 }
 
 /**
@@ -108,7 +123,7 @@ export function startFirestoreSync(uid, { getState, setState, subscribe }) {
         return
       }
 
-      applyRemoteData(snap.data(), setState)
+      applyRemoteData(snap.data(), setState, getState)
       if (!initialCloudApplied) initialCloudApplied = true
     },
     (err) => {

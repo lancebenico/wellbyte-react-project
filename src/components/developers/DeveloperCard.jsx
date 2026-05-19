@@ -35,6 +35,12 @@ export default function DeveloperCard({ developer }) {
         <p className="mt-2 text-sm leading-relaxed text-text-secondary">
           {developer.description}
         </p>
+        {developer.photoSource && (
+          <p className="mt-3 text-[11px] leading-relaxed text-text-muted border-t border-black/[0.06] pt-3">
+            <span className="font-semibold text-cics-red-dark">Photo source: </span>
+            {developer.photoSource}
+          </p>
+        )}
       </div>
     </article>
   )

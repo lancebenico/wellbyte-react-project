@@ -3,6 +3,7 @@ import PageTransition from '../components/ui/layout/PageTransition'
 import PageWrapper from '../components/layout/PageWrapper'
 import PageHero, { HeroStat } from '../components/ui/layout/PageHero'
 import DeveloperCard from '../components/developers/DeveloperCard'
+import ProjectSourcesSection from '../components/developers/ProjectSourcesSection'
 import { DEVELOPERS, DEVELOPERS_COPY } from '../utils/constants/developers'
 
 export default function DevelopersPage() {
@@ -30,6 +31,8 @@ export default function DevelopersPage() {
             <DeveloperCard key={dev.name} developer={dev} />
           ))}
         </div>
+
+        <ProjectSourcesSection />
 
         <div className="retro-window-pink overflow-hidden">
           <div className="retro-titlebar">

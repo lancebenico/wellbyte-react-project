@@ -3,18 +3,18 @@ import { NavLink } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, ChevronDown, Settings, Menu, X } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
-import useStore from '../../store/useStore'
+import { useAppContext } from '../../context/AppContext'
 import SettingsModal, { OPEN_SETTINGS_EVENT } from '../profile/SettingsModal'
 import { NAV_LINKS } from '../../utils/constants/navigation'
-import { getPreferredDisplayName, getInitials } from '../../utils/getPreferredDisplayName'
+import { getInitials } from '../../utils/getPreferredDisplayName'
 
 function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
   const { user, signOut } = useAuthStore()
-  const profile = useStore((s) => s.profile)
+  const { preferredDisplayName } = useAppContext()
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
 
-  const preferredName = getPreferredDisplayName(profile, user, 'User')
+  const preferredName = preferredDisplayName || 'User'
   const initials = getInitials(preferredName, user?.email)
 
   useEffect(() => {

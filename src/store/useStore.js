@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import { toLocalYMD, isTaskOverdue, isDueWithinDays } from '../lib/timeManagement'
 import { normalizeItem, migrateStoredItems } from '../lib/items'
 import { fetchQuoteForMood, getLatestMoodValue } from '../lib/quotesApi'
+import { mergeProfiles } from '../lib/profileMerge'
 
 const generateId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
@@ -92,6 +93,7 @@ const useStore = create(
           profile: {
             ...state.profile,
             ...updates,
+            updatedAt: Date.now(),
           },
         })),
 
@@ -101,6 +103,7 @@ const useStore = create(
             ...state.profile,
             ...profileUpdates,
             onboardingComplete: true,
+            updatedAt: Date.now(),
           },
         })),
 
@@ -177,7 +180,7 @@ const useStore = create(
           ...current,
           ...p,
           tasks: tasks.map(normalizeItem),
-          profile: { ...defaultProfile, ...current.profile, ...p.profile },
+          profile: mergeProfiles(current.profile, p.profile),
         }
       },
     }

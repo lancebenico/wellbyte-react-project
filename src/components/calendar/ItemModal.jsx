@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Trash2 } from 'lucide-react'
 import { pad2, toYMD } from '../../lib/calendarUtils'
+import { isPastYMD, minDateForNewItem } from '../../lib/timeManagement'
 import { ITEM_CATEGORIES, CATEGORY_LABELS } from '../../lib/items'
 import { getSubjectsForTerm, isAcademicTermConfigured } from '../../lib/courses'
 import useStore from '../../store/useStore'
@@ -114,6 +115,9 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
 
   if (!open) return null
 
+  const isNewItem = !item
+  const minDueDate = isNewItem ? minDateForNewItem() : undefined
+
   const academicReady = isAcademicTermConfigured(profile)
   const subjects =
     category === 'task' && academicReady
@@ -142,6 +146,11 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
       }
     }
 
+    if (isNewItem && dueDate && isPastYMD(dueDate)) {
+      setError('Due date cannot be in the past.')
+      return
+    }
+
     const patch = {
       title: title.trim(),
       description: description.trim(),
@@ -164,6 +173,10 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
         setError('Choose a date for this event.')
         return
       }
+      if (isNewItem && isPastYMD(day)) {
+        setError('Event date cannot be in the past.')
+        return
+      }
       const [sh, sm] = timeStart.split(':').map(Number)
       const [eh, em] = timeEnd.split(':').map(Number)
       const start = new Date(day)
@@ -183,6 +196,10 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
       const end = endDate || start
       if (!start || !end) {
         setError('Choose start and end dates.')
+        return
+      }
+      if (isNewItem && (isPastYMD(start) || isPastYMD(end))) {
+        setError('Event dates cannot be in the past.')
         return
       }
       if (start > end) {
@@ -278,6 +295,7 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
               id="item-due"
               type="date"
               value={dueDate}
+              min={minDueDate}
               onChange={(e) => setDueDate(e.target.value)}
               className="retro-input w-full"
             />
@@ -358,6 +376,7 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
                     <input
                       type="date"
                       value={day}
+                      min={minDueDate}
                       onChange={(e) => {
                         setDay(e.target.value)
                         if (!dueDate) setDueDate(e.target.value)
@@ -407,6 +426,7 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
                         <input
                           type="date"
                           value={startDate}
+                          min={minDueDate}
                           onChange={(e) => setStartDate(e.target.value)}
                           className="retro-input w-full"
                         />
@@ -416,6 +436,7 @@ export default function ItemModal({ open, onClose, item, anchorDate, onSave, onD
                         <input
                           type="date"
                           value={endDate}
+                          min={minDueDate}
                           onChange={(e) => setEndDate(e.target.value)}
                           className="retro-input w-full"
                         />

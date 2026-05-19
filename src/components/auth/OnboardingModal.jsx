@@ -4,6 +4,7 @@ import useAuthStore from '../../store/useAuthStore'
 import useStore from '../../store/useStore'
 import AcademicProfileFields from '../profile/AcademicProfileFields'
 import { isAcademicTermConfigured } from '../../lib/courses'
+import { flushFirestoreSave } from '../../lib/firestoreSync'
 
 export default function OnboardingModal() {
   const authUser = useAuthStore((s) => s.user)
@@ -18,7 +19,7 @@ export default function OnboardingModal() {
     if (fromAuth) setDisplayName(fromAuth)
   }, [authUser?.displayName])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (!displayName.trim()) {
       setError('Please enter your preferred name.')
@@ -34,6 +35,14 @@ export default function OnboardingModal() {
       yearLevel,
       semester,
     })
+    const uid = authUser?.uid
+    if (uid) {
+      try {
+        await flushFirestoreSave(() => useStore.getState())
+      } catch {
+        setError('Profile saved on this device, but cloud sync failed. Please try again.')
+      }
+    }
   }
 
   return (

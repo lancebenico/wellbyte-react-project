@@ -7,7 +7,12 @@ import {
 import SmartBreakdown from './SmartBreakdown'
 import useStore from '../../store/useStore'
 import { taskItem, filterPill } from '../../lib/animations'
-import { formatDueChip, formatShortDue } from '../../lib/timeManagement'
+import {
+  formatDueChip,
+  formatShortDue,
+  isPastYMD,
+  minDateForNewItem,
+} from '../../lib/timeManagement'
 import { CATEGORY_LABELS, ITEM_CATEGORIES } from '../../lib/items'
 import { getSubjectsForTerm, isAcademicTermConfigured } from '../../lib/courses'
 import { TASK_TYPE_BADGE, taskTypeLabel } from '../../lib/taskTypes'
@@ -120,6 +125,10 @@ function AddTaskForm({ onClose }) {
         return
       }
     }
+    if (dueDate && isPastYMD(dueDate)) {
+      setFormError('Due date cannot be in the past.')
+      return
+    }
     setFormError('')
     const est =
       estimatedMinutes === '' || Number.isNaN(Number(estimatedMinutes))
@@ -215,6 +224,7 @@ function AddTaskForm({ onClose }) {
             <input
               type="date"
               value={dueDate}
+              min={minDateForNewItem()}
               onChange={(e) => setDueDate(e.target.value)}
               className="retro-input w-full"
             />
