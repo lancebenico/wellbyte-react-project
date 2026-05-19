@@ -121,6 +121,7 @@ export default function MoodTracker() {
             whileTap={{ scale: 0.97 }}
             transition={{ type: 'spring', stiffness: 500, damping: 32 }}
             onClick={() => handleMoodSelect(mood)}
+            aria-label={`Log mood: ${mood.label}`}
             aria-pressed={selectedMood?.value === mood.value}
             className={`
               relative flex flex-1 min-h-[72px] sm:min-h-0 flex-col items-center justify-center gap-1 py-2.5 px-1 rounded-md border transition-all duration-150

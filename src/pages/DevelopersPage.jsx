@@ -1,10 +1,10 @@
-import { Code2, GraduationCap, Heart, Sparkles, UsersRound } from 'lucide-react'
+import { Code2, GraduationCap, Heart, UsersRound } from 'lucide-react'
 import PageTransition from '../components/ui/layout/PageTransition'
 import PageWrapper from '../components/layout/PageWrapper'
 import PageHero, { HeroStat } from '../components/ui/layout/PageHero'
 import DeveloperCard from '../components/developers/DeveloperCard'
 import ProjectSourcesSection from '../components/developers/ProjectSourcesSection'
-import { DEVELOPERS, DEVELOPERS_COPY } from '../utils/constants/developers'
+import { DEVELOPERS } from '../utils/constants/developers'
 
 export default function DevelopersPage() {
   return (
@@ -33,21 +33,6 @@ export default function DevelopersPage() {
         </div>
 
         <ProjectSourcesSection />
-
-        <div className="retro-window-pink overflow-hidden">
-          <div className="retro-titlebar">
-            <span className="text-[11px] font-semibold uppercase tracking-[0.08em] text-text-muted flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-cics-red" />
-              {DEVELOPERS_COPY.missionTitle}
-            </span>
-          </div>
-          <div className="p-5 sm:p-8">
-            <p className="text-sm sm:text-[15px] text-text-secondary leading-relaxed flex items-start gap-2">
-              <Heart className="w-4 h-4 text-cics-red shrink-0 mt-0.5" aria-hidden />
-              {DEVELOPERS_COPY.missionBody}
-            </p>
-          </div>
-        </div>
       </PageWrapper>
     </PageTransition>
   )

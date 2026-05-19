@@ -15,9 +15,12 @@ import useStore, { hydrateForUser } from './store/useStore'
 import { startFirestoreSync, stopFirestoreSync } from './lib/firestoreSync'
 import { isFirebaseConfigured } from './lib/firebase'
 import { AppProvider } from './context/AppContext'
+import ThemeSync from './components/layout/ThemeSync'
+import useDocumentTitle from './hooks/useDocumentTitle'
 
 function AnimatedRoutes() {
   const location = useLocation()
+  useDocumentTitle()
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
@@ -59,7 +62,9 @@ function AuthenticatedApp() {
   return (
     <div className="relative min-h-screen">
       <Navbar />
-      <AnimatedRoutes />
+      <main id="main-content" tabIndex={-1} className="outline-none">
+        <AnimatedRoutes />
+      </main>
       {!onboardingComplete && <OnboardingModal />}
     </div>
   )
@@ -76,6 +81,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AppProvider>
+        <ThemeSync />
         <ScrollRestoration />
         <AuthGuard>
           <AuthenticatedApp />

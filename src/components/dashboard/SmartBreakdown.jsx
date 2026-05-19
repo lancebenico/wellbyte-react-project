@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react'
-import { Sparkles, X, CheckSquare, Square } from 'lucide-react'
+import { X, CheckSquare, Square } from 'lucide-react'
 import { suggestMilestones } from '../../lib/smartBreakdown'
 import useStore from '../../store/useStore'
 
@@ -78,9 +78,8 @@ export default function SmartBreakdown() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="retro-btn text-xs py-2 px-2.5 flex items-center gap-1.5 border-dashed border-black/[0.15]"
+        className="retro-btn text-xs py-2 px-2.5 border-dashed border-black/[0.15]"
       >
-        <Sparkles className="w-3.5 h-3.5 text-amber-600" />
         Smart breakdown
       </button>
     )

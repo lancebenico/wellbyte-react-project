@@ -5,90 +5,58 @@ export const DEVELOPERS = [
     name: 'Joaquin Adriano',
     initials: 'JA',
     image: DEVELOPER_IMAGE_PATHS.adriano,
-    accentColor: '#9b2335',
-    avatarGradient: 'linear-gradient(135deg, #e8c4c8, #6b1524)',
     description: 'Helped with backend and frontend development.',
-    photoSource: 'Original team photograph — WellByte project assets (public/pictures/adriano.png)',
   },
   {
     name: 'Lance Benico',
     initials: 'LB',
     image: DEVELOPER_IMAGE_PATHS.benico,
-    accentColor: '#6b1524',
-    avatarGradient: 'linear-gradient(135deg, #fdf2f3, #4a0f18)',
     description: 'Worked on coding and project documentation.',
-    photoSource: 'Original team photograph — WellByte project assets (public/pictures/benico.jfif)',
   },
   {
     name: 'Kristine Cabanada',
     initials: 'KC',
     image: DEVELOPER_IMAGE_PATHS.cabanada,
-    accentColor: '#9b2335',
-    avatarGradient: 'linear-gradient(135deg, #fae8ea, #9b2335)',
     description: 'Designed the UI, helped with backend, and created presentations.',
-    photoSource: 'Original team photograph — WellByte project assets (public/pictures/cabanada.png)',
   },
   {
     name: 'Warren Chua',
     initials: 'WC',
     image: DEVELOPER_IMAGE_PATHS.chua,
-    accentColor: '#4a0f18',
-    avatarGradient: 'linear-gradient(135deg, #e8c4c8, #4a0f18)',
     description: 'Contributed to backend development and made diagrams.',
-    photoSource: 'Original team photograph — WellByte project assets (public/pictures/chua.jpg)',
   },
 ]
 
-/** External libraries, APIs, and assets used in WellByte (for Developers page attribution). */
-export const PROJECT_SOURCES = [
+/** Professional references for institutional and campus imagery used in WellByte. */
+export const PROFESSIONAL_IMAGE_REFERENCES = [
   {
-    name: 'React',
-    url: 'https://react.dev/',
-    purpose: 'Component-based UI framework',
+    name: 'University of Santo Tomas',
+    url: 'https://www.ust.edu.ph/',
   },
   {
-    name: 'React Router',
-    url: 'https://reactrouter.com/',
-    purpose: 'Client-side routing',
+    name: 'UST College of Information and Computing Sciences',
+    url: 'https://www.ust.edu.ph/information-and-computing-sciences/',
   },
   {
-    name: 'Tailwind CSS',
-    url: 'https://tailwindcss.com/',
-    purpose: 'Responsive layout and styling (CSS framework)',
+    name: 'The Varsitarian (Facebook)',
+    url: 'https://www.facebook.com/varsitarian',
   },
   {
-    name: 'Zustand',
-    url: 'https://zustand.docs.pmnd.rs/',
-    purpose: 'Application state management (tasks, mood, profile)',
+    name: 'UST ICSSC (Facebook)',
+    url: 'https://www.facebook.com/usticssc',
+  },
+]
+
+/** Libraries and APIs referenced in WellByte. */
+export const PROJECT_TECH_REFERENCES = [
+  {
+    name: 'Lucide React',
+    url: 'https://lucide.dev/',
+    purpose: 'Icon set used across navigation, dashboard, and UI components',
   },
   {
     name: 'Quotable API',
     url: 'https://github.com/lukePeavey/quotable',
-    purpose: 'Daily wellness quotes (external REST API)',
-  },
-  {
-    name: 'Firebase Auth & Firestore',
-    url: 'https://firebase.google.com/',
-    purpose: 'Google sign-in and cloud data sync',
-  },
-  {
-    name: 'Framer Motion',
-    url: 'https://www.framer.com/motion/',
-    purpose: 'Page and UI animations',
-  },
-  {
-    name: 'Lucide React',
-    url: 'https://lucide.dev/',
-    purpose: 'Icon set',
+    purpose: 'External REST API for mood-aligned daily quotes on Home and Dashboard',
   },
 ]
-
-export const DEVELOPERS_COPY = {
-  eyebrow: 'People',
-  title: 'Meet the Team',
-  subtitle:
-    'The people behind WellByte — focused on student life, well-being, and the spirit of UN SDGs 3 and 4.',
-  missionTitle: 'Built With Purpose',
-  missionBody:
-    'WellByte is more than a productivity tool — it is a commitment to student well-being. Every feature is designed with the UN Sustainable Development Goals in mind, promoting both quality education and good health.',
-}

@@ -4,7 +4,12 @@ import SignInPage from '../../pages/SignInPage'
 
 function LoadingScreen() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-retro-cream px-4">
+    <div
+      className="min-h-screen flex flex-col items-center justify-center bg-retro-cream px-4"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: [0.45, 1, 0.45] }}

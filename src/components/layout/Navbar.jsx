@@ -7,6 +7,7 @@ import { useAppContext } from '../../context/AppContext'
 import SettingsModal, { OPEN_SETTINGS_EVENT } from '../profile/SettingsModal'
 import { NAV_LINKS } from '../../utils/constants/navigation'
 import { getInitials } from '../../utils/getPreferredDisplayName'
+import ThemeToggleMenuItem from './ThemeToggleMenuItem'
 
 function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
   const { user, signOut } = useAuthStore()
@@ -59,12 +60,15 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
           </div>
         </div>
 
+        <ThemeToggleMenuItem
+          className="w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-cics-red-light/60 transition-colors"
+        />
         <button
           type="button"
           onClick={onOpenSettings}
           className="w-full flex items-center gap-2.5 px-2.5 py-2.5 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-cics-red-light/60 transition-colors"
         >
-          <Settings className="w-4 h-4 shrink-0" />
+          <Settings className="w-4 h-4 shrink-0" aria-hidden />
           Settings
         </button>
         <button
@@ -86,12 +90,14 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex min-w-0 items-center gap-1.5 xl:gap-2.5 pl-1 pr-1.5 xl:pr-2 py-1 rounded-md hover:bg-black/[0.04] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
+        aria-label={`Account menu for ${preferredName}`}
+        className="flex min-w-0 items-center gap-1.5 xl:gap-2.5 pl-1 pr-1.5 xl:pr-2 py-1 rounded-md hover:bg-black/[0.04] dark:hover:bg-white/[0.06] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3] dark:focus-visible:ring-offset-[#141214]"
       >
         {user.photoURL ? (
           <img
             src={user.photoURL}
             alt=""
+            aria-hidden
             referrerPolicy="no-referrer"
             className="w-8 h-8 rounded-md object-cover border border-black/[0.06]"
           />
@@ -116,6 +122,8 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
             exit={{ opacity: 0, y: 6 }}
             transition={{ duration: 0.12 }}
             className="absolute right-0 top-full mt-1.5 w-[min(16rem,calc(100vw-1.5rem))] retro-window overflow-hidden z-[70]"
+            role="menu"
+            aria-label="Account options"
           >
             <div className="px-3 py-3 border-b border-black/[0.06] bg-[#fafafa]">
               <div className="flex items-center gap-3 min-w-0">
@@ -139,19 +147,22 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
             </div>
 
             <div className="p-1">
+              <ThemeToggleMenuItem onAfterToggle={() => setOpen(false)} />
               <button
                 type="button"
                 onClick={() => {
                   setOpen(false)
                   onOpenSettings()
                 }}
+                role="menuitem"
                 className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-md text-sm font-medium text-text-secondary hover:text-text-primary hover:bg-black/[0.04] transition-colors"
               >
-                <Settings className="w-4 h-4" />
+                <Settings className="w-4 h-4" aria-hidden />
                 Settings
               </button>
               <button
                 type="button"
+                role="menuitem"
                 onClick={() => {
                   setOpen(false)
                   signOut()
@@ -232,6 +243,7 @@ export default function Navbar() {
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
         className="fixed top-0 left-0 right-0 z-50 w-full"
+        aria-label="Main navigation"
       >
         <div className="border-b border-black/[0.06] bg-[#f7f6f3]/85 backdrop-blur-md supports-[backdrop-filter]:bg-[#f7f6f3]/70">
           <div className="mx-auto max-w-7xl w-full px-3 sm:px-4 h-14 flex items-center justify-between gap-2 sm:gap-4 min-w-0">

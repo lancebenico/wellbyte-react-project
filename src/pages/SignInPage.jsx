@@ -36,7 +36,11 @@ export default function SignInPage() {
   const { signInWithGoogle, error, configured } = useAuthStore()
 
   return (
-    <div className="relative min-h-screen overflow-x-hidden bg-[#faf9f7]">
+    <main
+      id="main-content"
+      tabIndex={-1}
+      className="relative min-h-screen overflow-x-hidden bg-[#faf9f7] outline-none"
+    >
       <div className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-cics-red-deep" aria-hidden />
       <div className="pointer-events-none absolute inset-x-0 top-52 h-20 bg-cics-red-light/60" aria-hidden />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_16%,rgba(232,196,200,0.22),transparent_28rem)]" aria-hidden />
@@ -193,6 +197,6 @@ export default function SignInPage() {
           </div>
         </motion.div>
       </div>
-    </div>
+    </main>
   )
 }
