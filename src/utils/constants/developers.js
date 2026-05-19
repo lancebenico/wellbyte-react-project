@@ -7,6 +7,7 @@ export const DEVELOPERS = [
     image: DEVELOPER_IMAGE_PATHS.adriano,
     accentColor: '#9b2335',
     avatarGradient: 'linear-gradient(135deg, #e8c4c8, #6b1524)',
+    description: 'Helped with backend and frontend development.',
   },
   {
     name: 'Lance Benico',
@@ -14,6 +15,7 @@ export const DEVELOPERS = [
     image: DEVELOPER_IMAGE_PATHS.benico,
     accentColor: '#6b1524',
     avatarGradient: 'linear-gradient(135deg, #fdf2f3, #4a0f18)',
+    description: 'Worked on coding and project documentation.',
   },
   {
     name: 'Kristine Cabanada',
@@ -21,6 +23,7 @@ export const DEVELOPERS = [
     image: DEVELOPER_IMAGE_PATHS.cabanada,
     accentColor: '#9b2335',
     avatarGradient: 'linear-gradient(135deg, #fae8ea, #9b2335)',
+    description: 'Designed the UI, helped with backend, and created presentations.',
   },
   {
     name: 'Warren Chua',
@@ -28,6 +31,7 @@ export const DEVELOPERS = [
     image: DEVELOPER_IMAGE_PATHS.chua,
     accentColor: '#4a0f18',
     avatarGradient: 'linear-gradient(135deg, #e8c4c8, #4a0f18)',
+    description: 'Contributed to backend development and made diagrams.',
   },
 ]
 

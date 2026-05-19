@@ -1,1 +1,1 @@
-export { default } from './ui/PageTransition'
+export { default } from './ui/layout/PageTransition'

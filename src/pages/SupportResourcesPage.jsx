@@ -1,7 +1,8 @@
-import { Mail, MapPin, Phone } from 'lucide-react'
-import PageTransition from '../components/ui/PageTransition'
+import { createElement } from 'react'
+import { BookOpen, HeartHandshake, Mail, MapPin, Phone, ShieldAlert } from 'lucide-react'
+import PageTransition from '../components/ui/layout/PageTransition'
 import PageWrapper from '../components/layout/PageWrapper'
-import SectionHeader from '../components/common/SectionHeader'
+import PageHero from '../components/ui/layout/PageHero'
 import { PAGE_COPY } from '../utils/constants/pages'
 
 function Tel({ children, number }) {
@@ -28,15 +29,59 @@ function Section({ title, children }) {
 export default function SupportResourcesPage() {
   return (
     <PageTransition>
-      <PageWrapper maxWidth="max-w-3xl">
+      <PageWrapper maxWidth="max-w-7xl" className="bg-[#faf9f7]">
         <div className="space-y-6 w-full min-w-0">
-          <SectionHeader
+          <PageHero
             eyebrow={PAGE_COPY.support.eyebrow}
             title={PAGE_COPY.support.title}
             subtitle={`${PAGE_COPY.support.subtitle} For urgent mental health crises, use the hospital hotline or national hotlines below.`}
-            className="mb-2"
+            icon={HeartHandshake}
+            placement="left"
+            asideLabel="Choose the right doorway"
+            asideChildren={
+              <>
+                {[
+                  { icon: ShieldAlert, title: 'Immediate danger', text: 'Use local emergency services or urgent hospital lines.' },
+                  { icon: HeartHandshake, title: 'Need to talk', text: 'Reach counseling, peer responders, or crisis hotlines.' },
+                  { icon: BookOpen, title: 'Academic support', text: 'Check tutoring, labs, departments, and college offices.' },
+                ].map(({ icon: Icon, title, text }) => (
+                  <div key={title} className="rounded-xl border border-white/10 bg-white/12 p-4 text-white">
+                    <div className="flex gap-3">
+                      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-cics-red">
+                        {createElement(Icon, { className: 'h-4 w-4', 'aria-hidden': true })}
+                      </span>
+                      <div>
+                        <p className="text-sm font-bold">{title}</p>
+                        <p className="mt-1 text-xs font-medium leading-relaxed text-white/70">{text}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </>
+            }
           />
 
+          <div className="rounded-2xl border border-cics-red/12 bg-cics-red-light/65 p-4 shadow-[0_10px_30px_rgba(74,15,24,0.04)] sm:p-5">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-cics-red shadow-sm">
+                  <ShieldAlert className="h-4 w-4" aria-hidden />
+                </span>
+                <div>
+                  <p className="text-sm font-bold text-cics-red-deep">If this is urgent, start here.</p>
+                  <p className="mt-1 text-sm font-medium leading-relaxed text-cics-red-dark/80">
+                    If you are in immediate danger, contact local emergency services. For urgent mental health crises, use the UST Hospital emergency line or national crisis hotlines below.
+                  </p>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-col gap-1 text-sm font-bold text-cics-red">
+                <Tel number="+63287313001">USTH +63-2-8731-3001</Tel>
+                <Tel number="1553">NCMH 1553</Tel>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
           <Section title="Counseling &amp; career">
             <h2 className="text-base font-semibold text-text-primary">UST Counseling and Career Center (CCC)</h2>
             <p>
@@ -160,7 +205,7 @@ export default function SupportResourcesPage() {
           </Section>
 
           <Section title="National crisis hotlines (24/7)">
-            <p className="text-xs font-medium text-amber-900 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
+            <p className="text-xs font-medium text-cics-red-dark bg-cics-red-light border border-cics-red/15 rounded-md px-3 py-2">
               If you are in immediate distress and cannot reach university services, you can use these national lines.
             </p>
             <div className="space-y-3">
@@ -183,6 +228,7 @@ export default function SupportResourcesPage() {
               </div>
             </div>
           </Section>
+          </div>
 
           <p className="text-[11px] text-text-muted text-center pt-2">
             Information provided for convenience; confirm details with each office. WellByte is not affiliated with UST.

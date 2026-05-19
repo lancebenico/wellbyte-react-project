@@ -8,7 +8,7 @@ import {
   AcademicConfigPrompt,
   TaskTypePicker,
   TaskSubjectSelect,
-} from '../TaskAcademicFields'
+} from '../dashboard/TaskAcademicFields'
 
 const COLORS = [
   { id: 'blue', label: 'Blue', swatch: 'bg-[#1a73e8]' },
