@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react'
 import { AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, Plus, LayoutGrid, Columns2, List } from 'lucide-react'
-import PageTransition from '../components/ui/PageTransition'
+import PageTransition from '../components/ui/layout/PageTransition'
 import PageWrapper from '../components/layout/PageWrapper'
-import SectionHeader from '../components/common/SectionHeader'
+import PageHero, { HeroStat } from '../components/ui/layout/PageHero'
 import { PAGE_COPY } from '../utils/constants/pages'
 import ItemModal from '../components/calendar/ItemModal'
 import useStore from '../store/useStore'
@@ -156,22 +156,45 @@ export default function CalendarPage() {
 
   return (
     <PageTransition>
-      <PageWrapper>
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 w-full min-w-0">
-          <div className="min-w-0 flex-1">
-            <SectionHeader
-              eyebrow={PAGE_COPY.calendar.eyebrow}
-              title={
-                <span className="flex items-center gap-2 flex-wrap">
-                  <CalendarIcon className="w-7 h-7 text-cics-red shrink-0" aria-hidden />
-                  {title}
-                </span>
-              }
-              subtitle={PAGE_COPY.calendar.subtitle}
-              className="mb-0"
-            />
-          </div>
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+      <PageWrapper maxWidth="max-w-7xl" className="bg-[#faf9f7]">
+        <PageHero
+          eyebrow={PAGE_COPY.calendar.eyebrow}
+          title={title}
+          subtitle={PAGE_COPY.calendar.subtitle}
+          icon={CalendarIcon}
+          asideLabel="Planning snapshot"
+          asideChildren={
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <HeroStat icon={CalendarIcon} value={displayEvents.length} label="Visible items" />
+                <HeroStat icon={List} value={selectedDayEvents.length} label="Selected day" />
+              </div>
+              <div className="rounded-xl border border-white/10 bg-white/12 p-4 text-sm font-semibold leading-snug text-white/86">
+                Use Month to scan, Week to time-block, and Schedule to work through what is next.
+              </div>
+            </>
+          }
+        />
+
+        <div className="mb-6 rounded-2xl border border-cics-red/8 bg-white p-3 shadow-[0_10px_30px_rgba(74,15,24,0.05)]">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="grid min-w-0 flex-1 grid-cols-1 gap-2 sm:grid-cols-3">
+              <div className="rounded-xl bg-cics-red-light/45 px-3 py-2">
+                <p className="text-lg font-bold leading-none text-text-primary tabular-nums">{displayEvents.length}</p>
+                <p className="mt-1 text-[11px] font-semibold text-text-muted">Visible items</p>
+              </div>
+              <div className="rounded-xl bg-cics-red-light/45 px-3 py-2">
+                <p className="text-lg font-bold leading-none text-text-primary tabular-nums">
+                  {eventsTouchingDay(displayEvents, new Date()).length}
+                </p>
+                <p className="mt-1 text-[11px] font-semibold text-text-muted">Today</p>
+              </div>
+              <div className="rounded-xl bg-cics-red-light/45 px-3 py-2">
+                <p className="text-lg font-bold leading-none text-text-primary tabular-nums">{selectedDayEvents.length}</p>
+                <p className="mt-1 text-[11px] font-semibold text-text-muted">Selected day</p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
               <button type="button" onClick={goToday} className="retro-btn text-xs py-2">
                 Today
               </button>
@@ -221,6 +244,7 @@ export default function CalendarPage() {
               </button>
             </div>
           </div>
+        </div>
 
           <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">
             <div className="flex-1 min-w-0">

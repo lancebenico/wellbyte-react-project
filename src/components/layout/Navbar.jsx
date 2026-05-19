@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { LogOut, ChevronDown, Settings, Menu, X } from 'lucide-react'
 import useAuthStore from '../../store/useAuthStore'
 import useStore from '../../store/useStore'
-import SettingsModal, { OPEN_SETTINGS_EVENT } from '../SettingsModal'
+import SettingsModal, { OPEN_SETTINGS_EVENT } from '../profile/SettingsModal'
 import { NAV_LINKS } from '../../utils/constants/navigation'
 import { getPreferredDisplayName, getInitials } from '../../utils/getPreferredDisplayName'
 
@@ -86,7 +86,7 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
         onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex items-center gap-2 sm:gap-2.5 pl-1 pr-2 py-1 rounded-md hover:bg-black/[0.04] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
+        className="flex min-w-0 items-center gap-1.5 xl:gap-2.5 pl-1 pr-1.5 xl:pr-2 py-1 rounded-md hover:bg-black/[0.04] transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-retro-blue/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
       >
         {user.photoURL ? (
           <img
@@ -100,7 +100,7 @@ function UserMenu({ onOpenSettings, layout = 'dropdown' }) {
             {initials}
           </div>
         )}
-        <span className="text-sm font-medium text-text-primary hidden sm:block max-w-[100px] md:max-w-[120px] truncate">
+        <span className="text-sm font-medium text-text-primary hidden xl:block max-w-[120px] truncate">
           {preferredName}
         </span>
         <ChevronDown
@@ -176,7 +176,7 @@ function NavLinkItem({ link, onNavigate, compactNav = false }) {
       to={link.to}
       onClick={onNavigate}
       className={({ isActive }) =>
-        `flex items-center gap-2 px-2.5 md:px-3 py-2 md:py-1.5 rounded-md text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3] ${
+        `flex min-w-0 items-center gap-2 px-2.5 md:px-3 py-2 md:py-1.5 rounded-md text-sm font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3] ${
           isActive
             ? 'text-cics-red-dark bg-cics-red-light'
             : 'text-text-secondary hover:text-cics-red-dark hover:bg-cics-red-light/50'
@@ -188,8 +188,8 @@ function NavLinkItem({ link, onNavigate, compactNav = false }) {
         <span>{link.label}</span>
       ) : compactNav ? (
         <>
-          <span className="hidden lg:inline">{link.label}</span>
-          <span className="lg:hidden sr-only">{link.label}</span>
+          <span className="hidden xl:inline truncate">{link.label}</span>
+          <span className="xl:hidden sr-only">{link.label}</span>
         </>
       ) : (
         <span>{link.label}</span>
@@ -237,12 +237,12 @@ export default function Navbar() {
           <div className="mx-auto max-w-7xl w-full px-3 sm:px-4 h-14 flex items-center justify-between gap-2 sm:gap-4 min-w-0">
             <NavLink
               to="/"
-              className="font-semibold text-[clamp(0.875rem,2.5vw,0.9375rem)] tracking-tight text-cics-red-deep truncate min-w-0 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
+              className="shrink-0 max-w-[9rem] font-semibold text-[clamp(0.875rem,2.5vw,0.9375rem)] tracking-tight text-cics-red-deep truncate rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f7f6f3]"
             >
               WellByte
             </NavLink>
 
-            <div className="hidden md:flex items-center gap-0.5 lg:gap-1 flex-1 justify-center min-w-0">
+            <div className="hidden md:flex items-center gap-0.5 xl:gap-1 flex-1 justify-center min-w-0">
               {NAV_LINKS.map((link) => (
                 <NavLinkItem key={link.to} link={link} compactNav />
               ))}
@@ -255,7 +255,7 @@ export default function Navbar() {
 
               <button
                 type="button"
-                className="md:hidden p-2 rounded-md text-text-secondary hover:text-cics-red-dark hover:bg-cics-red-light/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35"
+                className="md:hidden inline-flex h-10 w-10 items-center justify-center rounded-md text-text-secondary hover:text-cics-red-dark hover:bg-cics-red-light/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-cics-red/35"
                 aria-expanded={mobileOpen}
                 aria-controls="mobile-nav-drawer"
                 aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
@@ -274,9 +274,9 @@ export default function Navbar() {
                 animate={{ height: 'auto', opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-                className="md:hidden border-t border-black/[0.06] bg-[#f7f6f3]/98"
+                className="fixed inset-x-0 top-14 md:hidden border-t border-black/[0.06] bg-[#f7f6f3]/98 shadow-[0_20px_50px_rgba(74,15,24,0.12)]"
               >
-                <div className="px-3 py-3 flex flex-col gap-1 max-h-[min(75vh,480px)] overflow-y-auto overflow-x-hidden">
+                <div className="mx-auto flex max-h-[calc(100vh-3.5rem)] w-full max-w-lg flex-col gap-1 overflow-y-auto overflow-x-hidden px-3 py-3">
                   {NAV_LINKS.map((link) => (
                     <NavLinkItem key={link.to} link={link} onNavigate={closeMobile} />
                   ))}

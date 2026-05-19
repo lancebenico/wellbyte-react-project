@@ -2,8 +2,9 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom'
 import { AnimatePresence } from 'framer-motion'
 import Navbar from './components/layout/Navbar'
-import OnboardingModal from './components/OnboardingModal'
+import OnboardingModal from './components/auth/OnboardingModal'
 import AuthGuard from './components/layout/AuthGuard'
+import ScrollRestoration from './components/layout/ScrollRestoration'
 import HomePage from './pages/HomePage'
 import DashboardPage from './pages/DashboardPage'
 import CalendarPage from './pages/CalendarPage'
@@ -73,6 +74,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <ScrollRestoration />
       <AuthGuard>
         <AuthenticatedApp />
       </AuthGuard>
